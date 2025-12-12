@@ -50,7 +50,7 @@
 //       {/* Hero Section */}
 //       <section className="flex flex-col lg:flex-row items-center justify-center px-4 py-12 gap-16 max-w-7xl mx-auto">
 //         <MainHeader
-//           h1="We Care<br />About Your Health"
+//           h1="We Care<br />about Your Health"
 //           p="Good health is the state of mental, physical and social well-being and it does not just mean absence of diseases."
 //           button="Book an Appointment →"
 //           button2="Sign Up"

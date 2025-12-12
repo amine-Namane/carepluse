@@ -6,7 +6,7 @@ export default function BookLayout({ children }) {
     
     <section>
     <section className="flex w-[100%]">
-        <Custemsidebar />
+        {/*<Custemsidebar />*/}
         <main className="flex p-6" >
         {children}
       </main>

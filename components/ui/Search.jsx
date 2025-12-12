@@ -41,7 +41,7 @@ export default  function Search() {
         </div>
         <ul className='flex justify-between   '>
 {menu.map((doct,i) => (
- <Link key={i} href={`/Booking/type/${doct}`} > <Catigo doct={doct} key={i} className={"w-[8rem] h-[6rem] bg-[#bdd9f2] text-center  p-4 rounded-md transition-all duration-300    hover:max-w-[9rem] hover:h-[7rem] hover:shadow-2xl"} /></Link>
+ <Link key={i} href={`/booking/type/${doct}`} > <Catigo doct={doct} key={i} className={"w-[8rem] h-[6rem] bg-[#bdd9f2] text-center  p-4 rounded-md transition-all duration-300    hover:max-w-[9rem] hover:h-[7rem] hover:shadow-2xl"} /></Link>
 ))}
 
 </ul>

@@ -31,7 +31,7 @@ export default  async function Custemsidebar() {
   {types.map((doct, i) => (
     <li key={i}>
       <Link 
-        href={`/Booking/type/${doct.name}`}
+        href={`/booking/type/${doct.name}`}
         className="group flex items-center p-4 rounded-lg transition-all duration-200 cursor-pointer hover:bg-blue-50 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500"
       >
         <Catigo 

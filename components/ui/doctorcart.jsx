@@ -108,6 +108,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { DatePickerDemo } from "./Datepicker";
+import {Users} from "lucide-react";
 
 export default function Doctorcart({ doct }) {
   const [selectedTime, setSelectedTime] = useState("");
@@ -173,57 +174,90 @@ export default function Doctorcart({ doct }) {
     }
   };
 
+  // return (
+  //   <div className="mt-10 mb-10 border-[#A7A7A7] border-2 rounded-lg w-56 p-6 transition-all duration-300 hover:shadow-2xl hover:border-[#0098ff] hover:scale-105">
+  //     {/* Doctor Image */}
+  //     <img
+  //       src={doct.image_url}
+  //       alt={`Dr. ${doct.name}`}
+  //       className="w-[70%] mx-auto mb-4 rounded-md shadow-md"
+  //     />
+  //
+  //     {/* Doctor Name and Specialization */}
+  //     <h2 className="font-semibold text-lg text-center">{doct.name}</h2>
+  //     <h2 className="text-[#A7A7A7] text-sm text-center mb-4">{doct.specialty}</h2>
+  //
+  //     {/* Book Now Popover */}
+  //     <Popover open={openPopover} onOpenChange={handleOpenChange}>
+  //       <PopoverTrigger className="w-full text-[#0098ff] border-2 border-[#0098ff] py-2 px-4 rounded-full text-sm font-medium hover:bg-[#0098ff] hover:text-white transition-all duration-300">
+  //         Book Now
+  //       </PopoverTrigger>
+  //       <PopoverContent className="w-80 p-6">
+  //         <div className="space-y-4">
+  //           <h3 className="text-lg font-semibold">Select Appointment Date & Time</h3>
+  //           <DatePickerDemo
+  //             onDateSelect={(date) => setSelectedDate(date)}
+  //           />
+  //
+  //           {/* Time Picker */}
+  //           <select
+  //             className="w-full border-2 border-gray-300 py-2 px-3 rounded-md focus:outline-none focus:border-[#0098ff]"
+  //             value={selectedTime}
+  //             onChange={(e) => setSelectedTime(e.target.value)}
+  //           >
+  //             <option value="">Select Time</option>
+  //             <option value="09:00 AM">09:00 AM</option>
+  //             <option value="10:00 AM">10:00 AM</option>
+  //             <option value="11:00 AM">11:00 AM</option>
+  //             <option value="01:00 PM">01:00 PM</option>
+  //             <option value="02:00 PM">02:00 PM</option>
+  //             <option value="03:00 PM">03:00 PM</option>
+  //             <option value="04:00 PM">04:00 PM</option>
+  //             <option value="05:00 PM">05:00 PM</option>
+  //           </select>
+  //
+  //           <button
+  //             onClick={handleBooking}
+  //             className="w-full bg-[#0098ff] text-white py-2 px-4 rounded-full hover:bg-[#007acc] transition-all duration-300"
+  //           >
+  //             Submit
+  //           </button>
+  //         </div>
+  //       </PopoverContent>
+  //     </Popover>
+  //   </div>
+  // );
   return (
-    <div className="mt-10 mb-10 border-[#A7A7A7] border-2 rounded-lg w-56 p-6 transition-all duration-300 hover:shadow-2xl hover:border-[#0098ff] hover:scale-105">
-      {/* Doctor Image */}
-      <img
-        src={doct.image_url}
-        alt={`Dr. ${doct.name}`}
-        className="w-[70%] mx-auto mb-4 rounded-md shadow-md"
-      />
-
-      {/* Doctor Name and Specialization */}
-      <h2 className="font-semibold text-lg text-center">{doct.name}</h2>
-      <h2 className="text-[#A7A7A7] text-sm text-center mb-4">{doct.specialty}</h2>
-
-      {/* Book Now Popover */}
-      <Popover open={openPopover} onOpenChange={handleOpenChange}>
-        <PopoverTrigger className="w-full text-[#0098ff] border-2 border-[#0098ff] py-2 px-4 rounded-full text-sm font-medium hover:bg-[#0098ff] hover:text-white transition-all duration-300">
-          Book Now
-        </PopoverTrigger>
-        <PopoverContent className="w-80 p-6">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Select Appointment Date & Time</h3>
-            <DatePickerDemo 
-              onDateSelect={(date) => setSelectedDate(date)}
-            />
-            
-            {/* Time Picker */}
-            <select
-              className="w-full border-2 border-gray-300 py-2 px-3 rounded-md focus:outline-none focus:border-[#0098ff]"
-              value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
-            >
-              <option value="">Select Time</option>
-              <option value="09:00 AM">09:00 AM</option>
-              <option value="10:00 AM">10:00 AM</option>
-              <option value="11:00 AM">11:00 AM</option>
-              <option value="01:00 PM">01:00 PM</option>
-              <option value="02:00 PM">02:00 PM</option>
-              <option value="03:00 PM">03:00 PM</option>
-              <option value="04:00 PM">04:00 PM</option>
-              <option value="05:00 PM">05:00 PM</option>
-            </select>
-
-            <button
-              onClick={handleBooking}
-              className="w-full bg-[#0098ff] text-white py-2 px-4 rounded-full hover:bg-[#007acc] transition-all duration-300"
-            >
-              Submit
-            </button>
+      <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group">
+        <div className="relative h-64 overflow-hidden">
+          <img
+              src={doct.image}
+              alt={doct.name}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div className="absolute bottom-4 left-4 text-white">
+            <h3 className="text-xl font-bold">{doct.name}</h3>
+            <p className="text-sm opacity-90">{doct.specialization}</p>
           </div>
-        </PopoverContent>
-      </Popover>
-    </div>
+        </div>
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="flex text-yellow-400">
+                {'★'.repeat(Math.floor(doct.rating))}
+              </div>
+              <span className="text-gray-600 text-sm">{doct.rating}</span>
+            </div>
+            <div className="flex items-center gap-1 text-gray-600 text-sm">
+              <Users className="w-4 h-4" />
+              <span>{doct.patients}+</span>
+            </div>
+          </div>
+          <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105">
+            Book Appointment
+          </button>
+        </div>
+      </div>
   );
 }

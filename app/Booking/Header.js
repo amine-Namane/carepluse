@@ -7,6 +7,7 @@ export default function Header({searchQuery,handleSearch,setViewMode,setShowFilt
 
     return(
         <>
+
             <div className="mb-6 lg:mb-8">
                 {/* Search and Controls */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">

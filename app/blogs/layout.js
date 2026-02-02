@@ -1,5 +1,5 @@
-import Custemsidebar from "@/components/ui/types";
-import DynamicDoctorDashboard from '@/components/doctor-dashboard'
+import Custemsidebar from "@/components/ui/types.jsx";
+import DynamicDoctorDashboard from '@/components/doctor-dashboard.jsx'
 
 export default function BookLayout({ children }) {
     return(

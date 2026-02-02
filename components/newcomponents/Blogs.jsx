@@ -44,7 +44,7 @@ export  default  function BlogSection() {
                         </h2>
                         <p className="text-xl text-gray-600">Latest updates and health tips</p>
                     </div>
-                    <Link href={'/Doctors'} className="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2 transition-colors duration-200">
+                    <Link href={'/blogs'} className="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2 transition-colors duration-200">
                         View All Articles <ChevronRight className="w-5 h-5" />
                     </Link>
                 </div>

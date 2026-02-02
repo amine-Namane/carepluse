@@ -912,7 +912,7 @@ const MockHeader = () => {
               </div>
 
               <a
-                  href="/doctors"
+                  href="/blogs"
                   className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200"
               >
                 Blogs
@@ -1206,7 +1206,7 @@ const MockHeader = () => {
                         </a>
 
                         <a
-                            href="/doctors"
+                            href="/blogs"
                             className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
                         >
                           <User className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -1257,6 +1257,53 @@ const MockHeader = () => {
                 ) : (
                     // Mobile menu when user is NOT logged in
                     <div className="space-y-2">
+                      <a
+                          href="/"
+                          className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                      >
+                        <Home className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <span className="font-medium">Home</span>
+                      </a>
+
+                      <a
+                          href="/Booking"
+                          className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                      >
+                        <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <span className="font-medium">Book Appointment</span>
+                      </a>
+
+                      <a
+                          href="/lab-tests"
+                          className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                      >
+                        <Activity className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                        <span className="font-medium">Analyze Tests</span>
+                      </a>
+
+                      <a
+                          href="/blogs"
+                          className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                      >
+                        <User className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        <span className="font-medium">Blogs</span>
+                      </a>
+
+                      <a
+                          href="/about"
+                          className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                      >
+                        <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <span className="font-medium">About</span>
+                      </a>
+
+                      <a
+                          href="/contact"
+                          className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                      >
+                        <Phone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <span className="font-medium">Contact</span>
+                      </a>
                       <a
                           href="/patient"
                           className="block w-full px-6 py-3 text-center text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"

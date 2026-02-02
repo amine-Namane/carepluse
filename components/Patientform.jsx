@@ -585,7 +585,7 @@ export function PatientForm() {
       // 4. Show success and redirect
       setSuccess(true);
       setTimeout(() => {
-        router.push('/Home');
+        router.push('/');
       }, 1500);
 
     } catch (error) {

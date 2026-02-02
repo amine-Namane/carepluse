@@ -2611,115 +2611,55 @@ const TestAnalyzerPage = () => {
           return `${test.name}: ${values[key]} ${test.unit}`;
         })
         .join("\n");
+    const prompt = `You are a board-certified pathologist and clinical laboratory specialist providing professional medical interpretation. Your response must be structured as a formal medical report.
 
-//     const prompt = `
-// ---
-//
-// ### **1. Test Analysis**
-// - **For each value:**
-// - **Status:** Clearly state *High/Normal/Low* in **bold**. (and display 🔴 for low, 🟠 for high, 🟢 for normal)
-// - **Biological Reason:** One concise phrase (≤15 words) explaining the mechanism or clinical relevance.
-// - **Example Format:**
-// - Hemoglobin: **High** 🟠. Chronic hypoxia stimulates erythropoietin production.
-//
-// ---
-//
-// ### **2. Potential Diagnoses**
-// - **Criteria:** Only list conditions **directly linked to ALL abnormal values combined**.
-// - **Prioritization:** Rank **top 3** most likely diagnoses (use medical terminology).
-// - Include a brief rationale (1 sentence) linking abnormal results to each diagnosis.
-// - **Example:**
-// 1. **Polycythemia Vera** – Elevated hemoglobin and hematocrit with JAK2 mutation association.
-//
-// ---
-//
-// ### **3. Recommended Specialists**
-// - **Specificity:** Name **subspecialists** (e.g., *Hematologist*, not "doctor").
-// - **Alignment:** Pair each specialist with a corresponding diagnosis from Section 2.
-// - **Example:**
-// - **Hematologist**: Further evaluate suspected polycythemia vera.
-//
-// ---
-//
-// **Lab Results:**
-// \n\n${formattedResults}\n\n
-//
-// ---
-// **Response Guidelines:**
-// - Use clear headings, bullet points, and bold keywords for readability.
-// - Avoid redundant explanations or general statements.
-// - Prioritize abnormalities first, then normal values.
-// `;
-    const prompt = `You are a board-certified clinical pathologist providing professional laboratory interpretation.
-
-**PATIENT DATA:**
+**PATIENT LABORATORY DATA:**
 Test Panel: ${testCategories[selectedTestCategory].name}
-Panel Purpose: ${testCategories[selectedTestCategory].description}
-
-**LABORATORY RESULTS:**
+Results:
 ${formattedResults}
 
-**REFERENCE RANGES:**
-${Object.keys(values).map(key => {
-      const test = selectedTests[key];
-      return `${test.name}: ${test.min}-${test.max} ${test.unit}`;
-    }).join('\n')}
+**REQUIRED REPORT STRUCTURE:**
 
----
+### **1. INTERPRETIVE SUMMARY**
+Provide a 2-3 sentence executive summary highlighting the most significant findings.
 
-**REQUIRED OUTPUT FORMAT:**
+### **2. INDIVIDUAL PARAMETER ANALYSIS**
+For EACH test result, structure as:
+• **Parameter:** [Name] ([Value] [Unit])
+• **Status:** [CRITICALLY LOW | LOW | NORMAL | HIGH | CRITICALLY HIGH] [Emoji]
+• **Clinical Significance:** One concise sentence explaining clinical relevance
+• **Possible Causes:** 2-3 bullet points of differential causes
 
-## 1. INDIVIDUAL PARAMETER ANALYSIS
-For each parameter, provide:
-- **Parameter Name** | Status: [🟢 NORMAL | 🟡 BORDERLINE | 🟠 ABNORMAL | 🔴 CRITICAL]
-- Value: [actual] ${test.unit} (Reference: ${test.min}-${test.max})
-- Clinical Interpretation: [1-2 sentences max]
-- Mechanism: [Brief pathophysiology if abnormal]
+### **3. PATTERN ANALYSIS**
+• **Overall Pattern:** Describe the pattern of abnormalities
+• **Most Significant Findings:** List top 3 clinically significant abnormal values
+• **Correlation:** How results relate to each other clinically
 
-## 2. PATTERN RECOGNITION & DIFFERENTIAL DIAGNOSIS
-Based on the constellation of findings:
-1. **Primary Diagnosis** (Most Likely)
-   - Rationale: [Link specific abnormal values]
-   - Confidence: [High/Moderate/Low]
+### **4. DIFFERENTIAL DIAGNOSES** (Ranked by likelihood)
+For each diagnosis:
+• **Diagnosis:** [Medical term]
+• **Likelihood:** [High/Medium/Low]
+• **Rationale:** Connection to specific lab values
+• **Ruling Out:** Key tests to confirm/rule out
 
-2. **Secondary Considerations**
-   - Alternative diagnoses if pattern is ambiguous
+### **5. RECOMMENDATIONS & NEXT STEPS**
+A. **Immediate Actions** (if any)
+B. **Specialist Referrals:** Specific subspecialists needed
+C. **Follow-up Testing:** Specific tests with rationale
+D. **Timeline:** Urgent/Within 1 week/Within 1 month
 
-3. **Excluded Conditions**
-   - Why certain diagnoses are unlikely
+### **6. CLINICAL RISK ASSESSMENT**
+• **Overall Risk:** [Low/Moderate/High/Critical]
+• **Urgency:** [Routine/Urgent/Emergent]
+• **Patient Guidance:** Key points to discuss with healthcare provider
 
-## 3. CLINICAL RECOMMENDATIONS
-
-### A. IMMEDIATE ACTIONS
-- Urgency Level: [🟢 Routine | 🟡 Prompt | 🔴 Urgent]
-- Required within: [timeframe]
-
-### B. SPECIALIST REFERRALS
-- **[Specific Subspecialty]**: [Precise reason]
-  Example: "Hematologist" not "blood doctor"
-
-### C. ADDITIONAL TESTING
-- Confirmatory tests needed
-- Timeline for follow-up
-
-### D. MONITORING PLAN
-- Parameters to track
-- Recommended retest interval
-
-## 4. RISK ASSESSMENT
-- **Overall Risk Score**: [1-10]/10
-- **Severity Classification**: [Minimal | Low | Moderate | High | Critical]
-- **Clinical Priority**: [Routine follow-up | Urgent consultation | Emergency evaluation]
-
----
-
-**FORMATTING RULES:**
-- Use emojis for status indicators (🟢🟡🟠🔴)
-- Keep interpretations concise (≤2 sentences)
-- Use medical terminology appropriately
-- Prioritize abnormal findings first
-- Include specific numeric values in context
-- Avoid hedging language unless genuinely uncertain`;
+**FORMATTING REQUIREMENTS:**
+• Use clear section headers with ##
+• Use bullet points (•) for lists
+• Bold key medical terms
+• Include relevant emojis for visual cues
+• Keep clinical language professional yet accessible
+• DO NOT include disclaimers - assume this is for clinical discussion`;
     try {
       const client = new OpenAI({
         baseURL: "https://models.inference.ai.azure.com",
@@ -2732,7 +2672,7 @@ Based on the constellation of findings:
           { role: "system", content: "You are a medical expert providing test analysis." },
           { role: "user", content: prompt },
         ],
-        model: "gpt-5",
+        model: "DeepSeek-V3-0324",
         temperature: 1,
         max_tokens: 4096,
         top_p: 1,
@@ -3349,155 +3289,108 @@ Based on the constellation of findings:
                     </div>
                   </div>
               )}
-
               {activeTab === 'results' && result && (
                   <div ref={resultsRef} className="space-y-6">
                     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl text-white">
-                            <TrendingUp className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <h2 className="text-xl font-bold text-gray-800">Clinical Analysis Report</h2>
-                            <p className="text-sm text-gray-500">Generated {new Date().toLocaleDateString()} • AI Confidence: {aiConfidence}%</p>
-                          </div>
-                        </div>
+                      {/* Header stays the same */}
 
-                        <div className="flex flex-wrap gap-2">
-                          <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                              <span className="text-xs text-gray-600">Normal</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                              <span className="text-xs text-gray-600">Warning</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                              <span className="text-xs text-gray-600">Critical</span>
-                            </div>
-                          </div>
+                      {/* Add this section before the results */}
+                      <div className="mb-6 grid md:grid-cols-4 gap-4">
+                        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-100">
+                          <div className="text-sm text-blue-700 mb-1">Test Panel</div>
+                          <div className="font-bold text-blue-900">{testCategories[selectedTestCategory]?.name}</div>
+                        </div>
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100">
+                          <div className="text-sm text-green-700 mb-1">AI Confidence</div>
+                          <div className="font-bold text-green-900">{aiConfidence}%</div>
+                        </div>
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-100">
+                          <div className="text-sm text-amber-700 mb-1">Analysis Date</div>
+                          <div className="font-bold text-amber-900">{new Date().toLocaleDateString()}</div>
+                        </div>
+                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100">
+                          <div className="text-sm text-purple-700 mb-1">Report ID</div>
+                          <div className="font-bold text-purple-900">#{Date.now().toString().slice(-6)}</div>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl mb-6">
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm font-medium text-gray-700">Export as:</span>
-                          <div className="flex gap-2">
-                            {['pdf', 'doc', 'txt'].map(format => (
+                      {/* Replace the current results display with this structured view */}
+                      <div className="prose max-w-none">
+                        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                          {/* Add section navigation */}
+                          <div className="flex overflow-x-auto border-b border-gray-200 bg-gray-50">
+                            {['summary', 'analysis', 'diagnosis', 'recommendations'].map((section) => (
                                 <button
-                                    key={format}
-                                    onClick={() => setExportFormat(format)}
-                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                                        exportFormat === format
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-                                    }`}
+                                    key={section}
+                                    className="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 border-transparent hover:bg-gray-100"
                                 >
-                                  {format.toUpperCase()}
+                                  {section.charAt(0).toUpperCase() + section.slice(1)}
                                 </button>
                             ))}
                           </div>
-                        </div>
 
-                        <div className="flex gap-2">
-                          <button
-                              onClick={copyResults}
-                              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm"
-                          >
-                            <Copy className="w-4 h-4" />
-                            Copy
-                          </button>
-                          <button
-                              onClick={exportResults}
-                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm"
-                          >
-                            <FileDown className="w-4 h-4" />
-                            Export {exportFormat.toUpperCase()}
-                          </button>
-                          <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg transition-colors flex items-center gap-2 text-sm">
-                            <Printer className="w-4 h-4" />
-                            Print
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="mb-6">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-gray-700">AI Confidence Level</span>
-                          <span className="text-sm font-bold text-blue-600">{aiConfidence}%</span>
-                        </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                              className="h-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 transition-all duration-1000"
-                              style={{ width: `${aiConfidence}%` }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      <div className="prose max-w-none">
-                        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 lg:p-8 whitespace-pre-wrap text-gray-700 leading-relaxed border border-blue-100 shadow-inner">
-                          {result}
-                        </div>
-                      </div>
-
-                      {analysisDetails && (
-                          <div className="grid md:grid-cols-3 gap-4 mt-6">
-                            <div className="bg-gradient-to-br from-red-50 to-pink-50 border border-red-100 rounded-xl p-4">
-                              <div className="flex items-center gap-2 mb-2">
-                                <AlertTriangle className="w-5 h-5 text-red-600" />
-                                <h4 className="font-semibold text-red-800">Risk Level</h4>
-                              </div>
-                              <div className="text-2xl font-bold text-red-600 mb-1">{analysisDetails.riskScore}/10</div>
-                              <p className="text-sm text-red-700">Low Risk - Routine monitoring recommended</p>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-xl p-4">
-                              <div className="flex items-center gap-2 mb-2">
-                                <ThumbsUp className="w-5 h-5 text-green-600" />
-                                <h4 className="font-semibold text-green-800">Next Steps</h4>
-                              </div>
-                              <div className="space-y-1">
-                                {analysisDetails.nextSteps?.map((step, idx) => (
-                                    <div key={idx} className="text-sm text-green-700">
-                                      {step.step} - <span className="font-medium">{step.timeline}</span>
-                                    </div>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-xl p-4">
-                              <div className="flex items-center gap-2 mb-2">
-                                <Calendar className="w-5 h-5 text-blue-600" />
-                                <h4 className="font-semibold text-blue-800">Follow-up Timeline</h4>
-                              </div>
-                              <div className="text-lg font-bold text-blue-600 mb-1">2-4 Weeks</div>
-                              <p className="text-sm text-blue-700">Recommended retest period</p>
+                          {/* Enhanced results display */}
+                          <div className="p-6 lg:p-8">
+                            <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+                              {result.split('\n').map((line, index) => {
+                                // Style different heading levels
+                                if (line.startsWith('### ')) {
+                                  return (
+                                      <h3 key={index} className="text-lg font-bold text-blue-700 mt-6 mb-3 pb-2 border-b border-blue-100">
+                                        {line.replace('### ', '')}
+                                      </h3>
+                                  );
+                                }
+                                if (line.startsWith('## ')) {
+                                  return (
+                                      <h2 key={index} className="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                        {line.replace('## ', '')}
+                                      </h2>
+                                  );
+                                }
+                                if (line.startsWith('• ')) {
+                                  return (
+                                      <div key={index} className="flex items-start gap-2 mb-2 ml-4">
+                                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                                        <span>{line.replace('• ', '')}</span>
+                                      </div>
+                                  );
+                                }
+                                if (line.trim() === '') {
+                                  return <div key={index} className="h-4"></div>;
+                                }
+                                return (
+                                    <p key={index} className="mb-3 text-gray-700">
+                                      {line}
+                                    </p>
+                                );
+                              })}
                             </div>
                           </div>
-                      )}
+                        </div>
+                      </div>
+
+                      {/* Add quick action buttons at bottom */}
+                      <div className="mt-8 pt-6 border-t border-gray-200">
+                        <div className="flex flex-wrap gap-3">
+                          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700">
+                            <Share2 className="w-4 h-4" />
+                            Share with Doctor
+                          </button>
+                          <button className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg flex items-center gap-2 hover:bg-blue-50">
+                            <BookOpen className="w-4 h-4" />
+                            View Medical Glossary
+                          </button>
+                          <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg flex items-center gap-2 hover:bg-gray-50">
+                            <AlertCircle className="w-4 h-4" />
+                            Flag for Review
+                          </button>
+                        </div>
+                      </div>
                     </div>
-
-                    {error && (
-                        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 flex items-start gap-4 animate-fade-in">
-                          <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-red-800 mb-1">Analysis Error</h3>
-                            <p className="text-red-600">{error}</p>
-                          </div>
-                          <button
-                              onClick={() => setError(null)}
-                              className="p-1 hover:bg-red-100 rounded-full transition-colors"
-                          >
-                            <X className="w-4 h-4 text-red-500" />
-                          </button>
-                        </div>
-                    )}
                   </div>
               )}
-
               {activeTab === 'history' && (
                   <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
                     <div className="flex items-center gap-3 mb-6">

@@ -345,7 +345,7 @@ function ArticleCard({ article, onClick }) {
               </div>
             </div>
 
-          <Link href={`/Doctors/${article.name}`}>  <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium flex items-center gap-1 group" >
+          <Link href={`/Blogs/${article.name}`}>  <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium flex items-center gap-1 group" >
               Read More
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
              </button>

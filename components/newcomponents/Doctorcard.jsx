@@ -31,7 +31,7 @@ export default  function DoctorCard({ doctor }) {
                     </div>
                     <div className="flex items-center gap-1 text-gray-600 text-sm">
                         <Users className="w-4 h-4" />
-                        <span>{doctor.patients.toLocaleString()}+</span>
+                        {/*<span>{doctor.patients.toLocaleString()}+</span>*/}
                     </div>
                 </div>
               <Link href={'/Booking'}>  <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105">

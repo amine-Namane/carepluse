@@ -1642,1038 +1642,1983 @@
 //         </div>
 //     );
 // }
-'use client'
-import React, { useState, useEffect } from 'react';
-import {
-    Search,
-    Filter,
-    Star,
-    MapPin,
-    Clock,
-    Calendar,
-    Heart,
-    Stethoscope,
-    Brain,
-    Bone,
-    Ear,
-    Eye,
-    UserRound,
-    Users,
-    Award,
-    ChevronRight,
-    BadgeCheck,
-    TrendingUp,
-    Phone,
-    Video,
-    MessageSquare,
-    Shield,
-    Sparkles,
-    Zap,
-    Crown,
-    TrendingDown,
-    CheckCircle,
-    X,
-    Sliders,
-    Home,
-    Navigation,
-    DollarSign,
-    ThumbsUp,
-    Award as AwardIcon,
-    Bookmark,
-    Share2,
-    ExternalLink,
-    Battery,
-    Wifi,
-    BatteryCharging,
-    Globe,
-    Moon,
-    Sun,
-    Settings,
-    Bell,
-    Activity
-} from 'lucide-react';
-import Header from "@/app/Booking/Header.js";
-// Mock data
-const mockDoctors = [
-    {
-        id: 1,
-        name: 'Dr. Sarah Johnson',
-        specialization: 'Cardiologist',
-        expertise: ['Heart Disease', 'Hypertension', 'Arrhythmia', 'Heart Failure'],
-        image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400',
-        rating: 4.9,
-        reviews: 156,
-        patients: 1200,
-        experience: '15 years',
-        location: 'New York Medical Center',
-        distance: '2.3 miles',
-        available: [
-            { date: 'Today', time: '2:00 PM', type: 'in-person' },
-            { date: 'Today', time: '4:30 PM', type: 'video' },
-            { date: 'Tomorrow', time: '10:00 AM', type: 'in-person' },
-        ],
-        price: 150,
-        insurance: ['Aetna', 'Blue Cross', 'UnitedHealth'],
-        languages: ['English', 'Spanish', 'French'],
-        availabilityScore: 95,
-        responseTime: '15 min',
-        verified: true,
-        featured: true,
-        awards: ['Best Cardiologist 2023', 'Top Doctor Award'],
-        waitTime: '5 min'
-    },
-    {
-        id: 2,
-        name: 'Dr. Michael Chen',
-        specialization: 'Dentist',
-        expertise: ['Cosmetic Dentistry', 'Implants', 'Orthodontics', 'Root Canal'],
-        image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400',
-        rating: 4.8,
-        reviews: 132,
-        patients: 980,
-        experience: '12 years',
-        location: 'Downtown Dental Clinic',
-        distance: '1.5 miles',
-        available: [
-            { date: 'Today', time: '11:00 AM', type: 'in-person' },
-            { date: 'Tomorrow', time: '9:00 AM', type: 'video' },
-        ],
-        price: 120,
-        insurance: ['Cigna', 'Delta Dental', 'MetLife'],
-        languages: ['English', 'Mandarin'],
-        availabilityScore: 88,
-        responseTime: '20 min',
-        verified: true,
-        featured: false,
-        awards: ['Dental Excellence Award'],
-        waitTime: '10 min'
-    },
-    {
-        id: 3,
-        name: 'Dr. Emily Rodriguez',
-        specialization: 'Orthopedic',
-        expertise: ['Sports Injury', 'Joint Replacement', 'Arthritis', 'Fracture Care'],
-        image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400',
-        rating: 4.9,
-        reviews: 189,
-        patients: 1100,
-        experience: '18 years',
-        location: 'City Orthopedic Hospital',
-        distance: '3.1 miles',
-        available: [
-            { date: 'Today', time: '4:00 PM', type: 'in-person' },
-            { date: 'Friday', time: '11:30 AM', type: 'video' },
-        ],
-        price: 180,
-        insurance: ['Aetna', 'Blue Cross', 'Cigna', 'Medicare'],
-        languages: ['English', 'Spanish'],
-        availabilityScore: 92,
-        responseTime: '10 min',
-        verified: true,
-        featured: true,
-        awards: ['Orthopedic Surgeon of the Year'],
-        waitTime: '15 min'
-    },
-    {
-        id: 4,
-        name: 'Dr. James Wilson',
-        specialization: 'Otology',
-        expertise: ['Hearing Loss', 'Tinnitus', 'Ear Infections', 'Balance Disorders'],
-        image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400',
-        rating: 4.7,
-        reviews: 98,
-        patients: 850,
-        experience: '10 years',
-        location: 'ENT Specialists Center',
-        distance: '4.5 miles',
-        available: [
-            { date: 'Monday', time: '9:00 AM', type: 'in-person' },
-            { date: 'Tuesday', time: '2:00 PM', type: 'video' },
-        ],
-        price: 140,
-        insurance: ['UnitedHealth', 'Aetna'],
-        languages: ['English'],
-        availabilityScore: 85,
-        responseTime: '25 min',
-        verified: true,
-        featured: false,
-        awards: [],
-        waitTime: '20 min'
-    },
-    {
-        id: 5,
-        name: 'Dr. Lisa Thompson',
-        specialization: 'Dentist',
-        expertise: ['Pediatric Dentistry', 'Preventive Care', 'Teeth Whitening'],
-        image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
-        rating: 4.8,
-        reviews: 145,
-        patients: 920,
-        experience: '14 years',
-        location: 'Smile Dental Care',
-        distance: '2.8 miles',
-        available: [
-            { date: 'Today', time: '1:00 PM', type: 'in-person' },
-            { date: 'Today', time: '3:30 PM', type: 'video' },
-        ],
-        price: 130,
-        insurance: ['Delta Dental', 'Cigna', 'Guardian'],
-        languages: ['English', 'Arabic'],
-        availabilityScore: 90,
-        responseTime: '18 min',
-        verified: true,
-        featured: true,
-        awards: ['Best Family Dentist'],
-        waitTime: '8 min'
-    },
-    {
-        id: 6,
-        name: 'Dr. Robert Martinez',
-        specialization: 'Cardiologist',
-        expertise: ['Cardiac Surgery', 'Angioplasty', 'Heart Transplant', 'Preventive Cardiology'],
-        image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400',
-        rating: 4.9,
-        reviews: 203,
-        patients: 1350,
-        experience: '20 years',
-        location: 'Heart Health Institute',
-        distance: '5.2 miles',
-        available: [
-            { date: 'Tomorrow', time: '3:00 PM', type: 'in-person' },
-            { date: 'Thursday', time: '10:00 AM', type: 'video' },
-        ],
-        price: 200,
-        insurance: ['Blue Cross', 'UnitedHealth', 'Medicare', 'Aetna'],
-        languages: ['English', 'Spanish', 'Portuguese'],
-        availabilityScore: 80,
-        responseTime: '30 min',
-        verified: true,
-        featured: true,
-        awards: ['Lifetime Achievement Award', 'Top Cardiologist 5 Years'],
-        waitTime: '25 min'
-    },
-];
+// 'use client'
+// import React, { useState, useEffect } from 'react';
+// import {
+//     Search,
+//     Filter,
+//     Star,
+//     MapPin,
+//     Clock,
+//     Calendar,
+//     Heart,
+//     Stethoscope,
+//     Brain,
+//     Bone,
+//     Ear,
+//     Eye,
+//     UserRound,
+//     Users,
+//     Award,
+//     ChevronRight,
+//     BadgeCheck,
+//     TrendingUp,
+//     Phone,
+//     Video,
+//     MessageSquare,
+//     Shield,
+//     Sparkles,
+//     Zap,
+//     Crown,
+//     TrendingDown,
+//     CheckCircle,
+//     X,
+//     Sliders,
+//     Home,
+//     Navigation,
+//     DollarSign,
+//     ThumbsUp,
+//     Award as AwardIcon,
+//     Bookmark,
+//     Share2,
+//     ExternalLink,
+//     Battery,
+//     Wifi,
+//     BatteryCharging,
+//     Globe,
+//     Moon,
+//     Sun,
+//     Settings,
+//     Bell,
+//     Activity
+// } from 'lucide-react';
+// import Header from "@/app/Booking/Header.js";
+// import { useQuery } from '@tanstack/react-query';
+// import { fetchDoctors } from '@/services/doctor';
+// // Mock data
+// const mockDoctors = [
+//     {
+//         id: 1,
+//         name: 'Dr. Sarah Johnson',
+//         specialization: 'Cardiologist',
+//         expertise: ['Heart Disease', 'Hypertension', 'Arrhythmia', 'Heart Failure'],
+//         image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400',
+//         rating: 4.9,
+//         reviews: 156,
+//         patients: 1200,
+//         experience: '15 years',
+//         location: 'New York Medical Center',
+//         distance: '2.3 miles',
+       
+//             available: [
+//   {
+//     day: 1, // Monday (0 = Sunday, 1 = Monday...)
+//     time: "14:00:00",
+//     type: "cabinet"
+//   },
+//   {
+//     day: 1,
+//     time: "16:30:00",
+//     type: "video"
+//   }
+//         ],
+//         price: 150,
+//         insurance: ['Aetna', 'Blue Cross', 'UnitedHealth'],
+//         languages: ['English', 'Spanish', 'French'],
+//         availabilityScore: 95,
+//         responseTime: '15 min',
+//         verified: true,
+//         featured: true,
+//         awards: ['Best Cardiologist 2023', 'Top Doctor Award'],
+//         waitTime: '5 min'
+//     },
+//     {
+//         id: 2,
+//         name: 'Dr. Michael Chen',
+//         specialization: 'Dentist',
+//         expertise: ['Cosmetic Dentistry', 'Implants', 'Orthodontics', 'Root Canal'],
+//         image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400',
+//         rating: 4.8,
+//         reviews: 132,
+//         patients: 980,
+//         experience: '12 years',
+//         location: 'Downtown Dental Clinic',
+//         distance: '1.5 miles',
+//         available: [
+//             { date: '04-05-2026', time: '11:00 ', type: 'in-person' },
+//             { date: '04-05-2026', time: '9:00 ', type: 'video' },
+//         ],
+//         price: 120,
+//         insurance: ['Cigna', 'Delta Dental', 'MetLife'],
+//         languages: ['English', 'Mandarin'],
+//         availabilityScore: 88,
+//         responseTime: '20 min',
+//         verified: true,
+//         featured: false,
+//         awards: ['Dental Excellence Award'],
+//         waitTime: '10 min'
+//     },
+//     {
+//         id: 3,
+//         name: 'Dr. Emily Rodriguez',
+//         specialization: 'Orthopedic',
+//         expertise: ['Sports Injury', 'Joint Replacement', 'Arthritis', 'Fracture Care'],
+//         image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400',
+//         rating: 4.9,
+//         reviews: 189,
+//         patients: 1100,
+//         experience: '18 years',
+//         location: 'City Orthopedic Hospital',
+//         distance: '3.1 miles',
+//         available: [
+//             { date: '04-05-2026', time: '4:00', type: 'in-person' },
+//             { date: '04-05-2026', time: '11:30 ', type: 'video' },
+//         ],
+//         price: 180,
+//         insurance: ['Aetna', 'Blue Cross', 'Cigna', 'Medicare'],
+//         languages: ['English', 'Spanish'],
+//         availabilityScore: 92,
+//         responseTime: '10 min',
+//         verified: true,
+//         featured: true,
+//         awards: ['Orthopedic Surgeon of the Year'],
+//         waitTime: '15 min'
+//     },
+//     {
+//         id: 4,
+//         name: 'Dr. James Wilson',
+//         specialization: 'Otology',
+//         expertise: ['Hearing Loss', 'Tinnitus', 'Ear Infections', 'Balance Disorders'],
+//         image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400',
+//         rating: 4.7,
+//         reviews: 98,
+//         patients: 850,
+//         experience: '10 years',
+//         location: 'ENT Specialists Center',
+//         distance: '4.5 miles',
+//         available: [
+//             { date: '04-05-2026', time: '9:00 AM', type: 'in-person' },
+//             { date: '04-05-2026', time: '2:00 PM', type: 'video' },
+//         ],
+//         price: 140,
+//         insurance: ['UnitedHealth', 'Aetna'],
+//         languages: ['English'],
+//         availabilityScore: 85,
+//         responseTime: '25 min',
+//         verified: true,
+//         featured: false,
+//         awards: [],
+//         waitTime: '20 min'
+//     },
+//     {
+//         id: 5,
+//         name: 'Dr. Lisa Thompson',
+//         specialization: 'Dentist',
+//         expertise: ['Pediatric Dentistry', 'Preventive Care', 'Teeth Whitening'],
+//         image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+//         rating: 4.8,
+//         reviews: 145,
+//         patients: 920,
+//         experience: '14 years',
+//         location: 'Smile Dental Care',
+//         distance: '2.8 miles',
+//         available: [
+//             { date: 'Today', time: '1:00 PM', type: 'in-person' },
+//             { date: 'Today', time: '3:30 PM', type: 'video' },
+//         ],
+//         price: 130,
+//         insurance: ['Delta Dental', 'Cigna', 'Guardian'],
+//         languages: ['English', 'Arabic'],
+//         availabilityScore: 90,
+//         responseTime: '18 min',
+//         verified: true,
+//         featured: true,
+//         awards: ['Best Family Dentist'],
+//         waitTime: '8 min'
+//     },
+//     {
+//         id: 6,
+//         name: 'Dr. Robert Martinez',
+//         specialization: 'Cardiologist',
+//         expertise: ['Cardiac Surgery', 'Angioplasty', 'Heart Transplant', 'Preventive Cardiology'],
+//         image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400',
+//         rating: 4.9,
+//         reviews: 203,
+//         patients: 1350,
+//         experience: '20 years',
+//         location: 'Heart Health Institute',
+//         distance: '5.2 miles',
+//         available: [
+//             { date: 'Tomorrow', time: '3:00 PM', type: 'in-person' },
+//             { date: 'Thursday', time: '10:00 AM', type: 'video' },
+//         ],
+//         price: 200,
+//         insurance: ['Blue Cross', 'UnitedHealth', 'Medicare', 'Aetna'],
+//         languages: ['English', 'Spanish', 'Portuguese'],
+//         availabilityScore: 80,
+//         responseTime: '30 min',
+//         verified: true,
+//         featured: true,
+//         awards: ['Lifetime Achievement Award', 'Top Cardiologist 5 Years'],
+//         waitTime: '25 min'
+//     },
+//      {
+//     id: 1,
+//     name: 'Dr. Sarahm Johnson',
+//     specialization: 'Cardiologist',
+//     image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400',
+//     rating: 4.9,
+//     expertise: ['Heart Disease', 'Hypertension'],
+//     available: [
+//       { day: 1, time: "14:00:00", type: "cabinet" }, // Monday
+//       { day: 1, time: "16:30:00", type: "video" },
+//       { day: 3, time: "10:00:00", type: "cabinet" }, // Wednesday
+//     ],
+//     price: 150,
+//   },
+// ];
 
-const specializations = [
-    { name: 'All Doctors', icon: <UserRound className="w-5 h-5" />, color: 'from-blue-500 to-cyan-500', slug: 'all', count: mockDoctors.length },
-    { name: 'Dentist', icon: <Stethoscope className="w-5 h-5" />, color: 'from-blue-500 to-indigo-500', slug: 'dentist', count: mockDoctors.filter(d => d.specialization === 'Dentist').length },
-    { name: 'Cardiologist', icon: <Heart className="w-5 h-5" />, color: 'from-red-500 to-pink-500', slug: 'cardiologist', count: mockDoctors.filter(d => d.specialization === 'Cardiologist').length },
-    { name: 'Orthopedic', icon: <Bone className="w-5 h-5" />, color: 'from-green-500 to-emerald-500', slug: 'orthopedic', count: mockDoctors.filter(d => d.specialization === 'Orthopedic').length },
-    { name: 'Otology', icon: <Ear className="w-5 h-5" />, color: 'from-purple-500 to-indigo-500', slug: 'otology', count: mockDoctors.filter(d => d.specialization === 'Otology').length },
-    { name: 'Eye Doctor', icon: <Eye className="w-5 h-5" />, color: 'from-amber-500 to-orange-500', slug: 'eyedoctor', count: 0 },
-    { name: 'For You', icon: <TrendingUp className="w-5 h-5" />, color: 'from-pink-500 to-rose-500', slug: 'foryou', count: 3 },
-];
+// const specializations = [
+//     { name: 'All Doctors', icon: <UserRound className="w-5 h-5" />, color: 'from-blue-500 to-cyan-500', slug: 'all', count: mockDoctors.length },
+//     { name: 'Dentist', icon: <Stethoscope className="w-5 h-5" />, color: 'from-blue-500 to-indigo-500', slug: 'dentist', count: mockDoctors.filter(d => d.specialization === 'Dentist').length },
+//     { name: 'Cardiologist', icon: <Heart className="w-5 h-5" />, color: 'from-red-500 to-pink-500', slug: 'cardiologist', count: mockDoctors.filter(d => d.specialization === 'Cardiologist').length },
+//     { name: 'Orthopedic', icon: <Bone className="w-5 h-5" />, color: 'from-green-500 to-emerald-500', slug: 'orthopedic', count: mockDoctors.filter(d => d.specialization === 'Orthopedic').length },
+//     { name: 'Otology', icon: <Ear className="w-5 h-5" />, color: 'from-purple-500 to-indigo-500', slug: 'otology', count: mockDoctors.filter(d => d.specialization === 'Otology').length },
+//     { name: 'Eye Doctor', icon: <Eye className="w-5 h-5" />, color: 'from-amber-500 to-orange-500', slug: 'eyedoctor', count: 0 },
+//     { name: 'For You', icon: <TrendingUp className="w-5 h-5" />, color: 'from-pink-500 to-rose-500', slug: 'foryou', count: 3 },
+// ];
 
-import DoctorCard from "@/components/newcomponents/booking/DoctorCard.jsx";
-import {Card, CardContent} from "@/components/ui/card.jsx";
-import {Badge} from "@/components/ui/badge.jsx";
-import {ScrollArea} from "@/components/ui/scroll-area.jsx";
-import {Button} from "@/components/ui/button.jsx";
-import {cn} from "@/lib/utils.js";
-import {Separator} from "@/components/ui/separator.jsx";
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion.jsx";
-import {Checkbox} from "@/components/ui/checkbox.jsx";
-import {Label} from "@/components/ui/label.jsx";
-import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs.jsx";
-import {Switch} from "@/components/ui/switch.jsx";
-import {Slider} from "@/components/ui/slider.jsx";
-import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet.jsx";
+// import DoctorCard from "@/components/newcomponents/booking/DoctorCard.jsx";
+// import {Card, CardContent} from "@/components/ui/card.jsx";
+// import {Badge} from "@/components/ui/badge.jsx";
+// import {ScrollArea} from "@/components/ui/scroll-area.jsx";
+// import {Button} from "@/components/ui/button.jsx";
+// import {cn} from "@/lib/utils.js";
+// import {Separator} from "@/components/ui/separator.jsx";
+// import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion.jsx";
+// import {Checkbox} from "@/components/ui/checkbox.jsx";
+// import {Label} from "@/components/ui/label.jsx";
+// import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs.jsx";
+// import {Switch} from "@/components/ui/switch.jsx";
+// import {Slider} from "@/components/ui/slider.jsx";
+// import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet.jsx";
+// //import Sidebar from "@/components/newcomponents/booking/Sidebar.jsx"
+// function Sidebar({ selectedCategory, onCategoryChange, filters, onFilterChange, showFilters }) {
+//     const [darkMode, setDarkMode] = useState(false);
 
-function Sidebar({ selectedCategory, onCategoryChange, filters, onFilterChange, showFilters }) {
-    const [darkMode, setDarkMode] = useState(false);
+//     const insuranceOptions = ['Aetna', 'Blue Cross', 'Cigna', 'UnitedHealth', 'Medicare', 'Delta Dental'];
+//     const languageOptions = ['English', 'Spanish', 'French', 'Mandarin', 'Arabic'];
+//     const experienceOptions = [
+//         { label: '5+ years', value: 5 },
+//         { label: '10+ years', value: 10 },
+//         { label: '15+ years', value: 15 },
+//     ];
 
-    const insuranceOptions = ['Aetna', 'Blue Cross', 'Cigna', 'UnitedHealth', 'Medicare', 'Delta Dental'];
-    const languageOptions = ['English', 'Spanish', 'French', 'Mandarin', 'Arabic'];
-    const experienceOptions = [
-        { label: '5+ years', value: 5 },
-        { label: '10+ years', value: 10 },
-        { label: '15+ years', value: 15 },
-    ];
+//     const activeFilterCount = Object.values(filters).reduce((count, value) => {
+//         if (Array.isArray(value)) {
+//             return count + value.length;
+//         } else if (typeof value === 'boolean' && value) {
+//             return count + 1;
+//         } else if (typeof value === 'number' && value > 0) {
+//             return count + 1;
+//         } else if (Array.isArray(value) && value[0] !== 50 && value[1] !== 300) {
+//             return count + 1;
+//         }
+//         return count;
+//     }, 0);
 
-    const activeFilterCount = Object.values(filters).reduce((count, value) => {
-        if (Array.isArray(value)) {
-            return count + value.length;
-        } else if (typeof value === 'boolean' && value) {
-            return count + 1;
-        } else if (typeof value === 'number' && value > 0) {
-            return count + 1;
-        } else if (Array.isArray(value) && value[0] !== 50 && value[1] !== 300) {
-            return count + 1;
-        }
-        return count;
-    }, 0);
+//     return (
+//         <>
+//             {/* Mobile Filter Button */}
+//             <div className="lg:hidden fixed bottom-20 right-4 z-50">
+//                 <Sheet>
+//                     <SheetTrigger asChild>
+//                         <Button className="rounded-full w-14 h-14 shadow-2xl" size="icon">
+//                             <Filter className="h-6 w-6" />
+//                             {activeFilterCount > 0 && (
+//                                 <Badge className="absolute -top-1 -right-1 px-2 min-w-5 h-5 flex items-center justify-center">
+//                                     {activeFilterCount}
+//                                 </Badge>
+//                             )}
+//                         </Button>
+//                     </SheetTrigger>
+//                     <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
+//                         <SheetHeader className="mb-6">
+//                             <SheetTitle className="flex items-center gap-2">
+//                                 <Filter className="h-5 w-5" />
+//                                 Filters & Categories
+//                             </SheetTitle>
+//                         </SheetHeader>
+//                         <div className="pb-6">
+//                             <MobileSidebarContent
+//                                 selectedCategory={selectedCategory}
+//                                 onCategoryChange={onCategoryChange}
+//                                 filters={filters}
+//                                 onFilterChange={onFilterChange}
+//                                 darkMode={darkMode}
+//                                 setDarkMode={setDarkMode}
+//                                 activeFilterCount={activeFilterCount}
+//                                 insuranceOptions={insuranceOptions}
+//                                 experienceOptions={experienceOptions}
+//                             />
+//                         </div>
+//                     </SheetContent>
+//                 </Sheet>
+//             </div>
 
+//             {/* Desktop Sidebar */}
+//             <aside
+//                 className={cn(
+//                     "hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] bg-white shadow-xl rounded-2xl border border-gray-100 overflow-y-auto transition-transform duration-300",
+//                     "sticky top-4"
+//                 )}
+//             >
+//                 <div className="p-6">
+//                     {/* Header */}
+//                     <div className="mb-8">
+//                         <div className="flex items-center justify-between mb-4">
+//                             <div className="flex items-center gap-3">
+//                                 <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+//                                     <Calendar className="w-5 h-5 text-white" />
+//                                 </div>
+//                                 <div>
+//                                     <h1 className="text-xl font-bold text-gray-800">Find Doctors</h1>
+//                                     <p className="text-sm text-gray-500">Book appointments easily</p>
+//                                 </div>
+//                             </div>
+//                             <button
+//                                 onClick={() => setDarkMode(!darkMode)}
+//                                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+//                             >
+//                                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+//                             </button>
+//                         </div>
+//                     </div>
+
+//                     {/* Search Stats */}
+//                     <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 mb-6">
+//                         <div className="flex items-center justify-between mb-2">
+//                             <span className="text-sm font-medium text-gray-700">Active Filters</span>
+//                             <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+//                                 {activeFilterCount} active
+//                             </span>
+//                         </div>
+//                         <div className="text-sm text-gray-600">
+//                             Showing {mockDoctors.length} doctors in your area
+//                         </div>
+//                     </div>
+
+//                     {/* Categories */}
+//                     <div className="mb-8">
+//                         <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+//                             <Stethoscope className="w-5 h-5" />
+//                             Specializations
+//                         </h2>
+//                         <nav className="space-y-2">
+//                             {specializations.map((spec, index) => (
+//                                 <button
+//                                     key={index}
+//                                     onClick={() => onCategoryChange(spec.slug)}
+//                                     className={`w-full group flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
+//                                         selectedCategory === spec.slug
+//                                             ? 'bg-gradient-to-r ' + spec.color + ' text-white shadow-lg'
+//                                             : 'hover:bg-gray-50 text-gray-700'
+//                                     }`}
+//                                 >
+//                                     <div className="flex items-center gap-3">
+//                                         <div className={`p-1.5 rounded-lg ${
+//                                             selectedCategory === spec.slug
+//                                                 ? 'bg-white/20'
+//                                                 : 'bg-gray-100 group-hover:bg-gray-200'
+//                                         }`}>
+//                                             {spec.icon}
+//                                         </div>
+//                                         <span className="font-medium">{spec.name}</span>
+//                                     </div>
+//                                     <div className="flex items-center gap-2">
+//                                         <span className={`text-xs px-2 py-1 rounded-full ${
+//                                             selectedCategory === spec.slug
+//                                                 ? 'bg-white/30'
+//                                                 : 'bg-gray-100 text-gray-600'
+//                                         }`}>
+//                                             {spec.count}
+//                                         </span>
+//                                         <ChevronRight className={`w-4 h-4 ${
+//                                             selectedCategory === spec.slug ? '' : 'text-gray-400 group-hover:translate-x-1'
+//                                         }`} />
+//                                     </div>
+//                                 </button>
+//                             ))}
+//                         </nav>
+//                     </div>
+
+//                     {/* Advanced Filters */}
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+//                                 <Filter className="w-4 h-4" />
+//                                 Filters
+//                             </h3>
+
+//                             {/* Experience */}
+//                             <div className="mb-4">
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Experience</label>
+//                                 <div className="space-y-2">
+//                                     {experienceOptions.map(exp => (
+//                                         <label key={exp.value} className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800">
+//                                             <input
+//                                                 type="checkbox"
+//                                                 checked={filters.experience.includes(exp.value)}
+//                                                 onChange={(e) => onFilterChange('experience', exp.value, e.target.checked)}
+//                                                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+//                                             />
+//                                             {exp.label}
+//                                         </label>
+//                                     ))}
+//                                 </div>
+//                             </div>
+
+//                             {/* Rating */}
+//                             <div className="mb-4">
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Rating</label>
+//                                 <div className="flex items-center gap-2">
+//                                     {[4, 4.5, 5].map(rating => (
+//                                         <button
+//                                             key={rating}
+//                                             onClick={() => onFilterChange('rating', rating)}
+//                                             className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm ${
+//                                                 filters.rating === rating
+//                                                     ? 'bg-blue-100 text-blue-700'
+//                                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+//                                             }`}
+//                                         >
+//                                             <Star className="w-3 h-3" />
+//                                             {rating}+
+//                                         </button>
+//                                     ))}
+//                                 </div>
+//                             </div>
+
+//                             {/* Availability */}
+//                             <div className="mb-4">
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+//                                 <div className="space-y-2">
+//                                     <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800">
+//                                         <input
+//                                             type="checkbox"
+//                                             checked={filters.availableToday}
+//                                             onChange={(e) => onFilterChange('availableToday', e.target.checked)}
+//                                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+//                                         />
+//                                         Available Today
+//                                     </label>
+//                                     <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800">
+//                                         <input
+//                                             type="checkbox"
+//                                             checked={filters.videoAvailable}
+//                                             onChange={(e) => onFilterChange('videoAvailable', e.target.checked)}
+//                                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+//                                         />
+//                                         Video Consultation
+//                                     </label>
+//                                 </div>
+//                             </div>
+
+//                             {/* Insurance */}
+//                             <div className="mb-4">
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Insurance</label>
+//                                 <div className="space-y-2 max-h-32 overflow-y-auto pr-2">
+//                                     {insuranceOptions.map(insurance => (
+//                                         <label key={insurance} className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800">
+//                                             <input
+//                                                 type="checkbox"
+//                                                 checked={filters.insurance.includes(insurance)}
+//                                                 onChange={(e) => onFilterChange('insurance', insurance, e.target.checked)}
+//                                                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+//                                             />
+//                                             {insurance}
+//                                         </label>
+//                                     ))}
+//                                 </div>
+//                             </div>
+
+//                             {/* Price Range */}
+//                             <div className="mb-4">
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">
+//                                     Price Range: ${filters.priceRange[0]} - ${filters.priceRange[1]}
+//                                 </label>
+//                                 <div className="space-y-2">
+//                                     <input
+//                                         type="range"
+//                                         min="50"
+//                                         max="300"
+//                                         step="10"
+//                                         value={filters.priceRange[1]}
+//                                         onChange={(e) => onFilterChange('priceRange', [filters.priceRange[0], parseInt(e.target.value)])}
+//                                         className="w-full"
+//                                     />
+//                                     <div className="flex justify-between text-xs text-gray-500">
+//                                         <span>$50</span>
+//                                         <span>$300</span>
+//                                     </div>
+//                                 </div>
+//                             </div>
+
+//                             {/* Clear Filters */}
+//                             {activeFilterCount > 0 && (
+//                                 <button
+//                                     onClick={() => onFilterChange('clear')}
+//                                     className="w-full mt-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+//                                 >
+//                                     Clear All Filters
+//                                 </button>
+//                             )}
+//                         </div>
+//                     </div>
+//                 </div>
+//             </aside>
+//         </>
+//     );
+// }
+
+// function MobileSidebarContent({
+//                                   selectedCategory,
+//                                   onCategoryChange,
+//                                   filters,
+//                                   onFilterChange,
+//                                   darkMode,
+//                                   setDarkMode,
+//                                   activeFilterCount,
+//                                   insuranceOptions,
+//                                   experienceOptions
+//                               }) {
+//     return (
+//         <div className="space-y-6">
+//             {/* Search Stats */}
+//             <Card>
+//                 <CardContent className="p-4">
+//                     <div className="flex items-center justify-between mb-2">
+//                         <span className="text-sm font-medium">Active Filters</span>
+//                         <Badge variant="secondary">
+//                             {activeFilterCount} active
+//                         </Badge>
+//                     </div>
+//                     <p className="text-sm text-muted-foreground">
+//                         Showing {mockDoctors.length} doctors in your area
+//                     </p>
+//                 </CardContent>
+//             </Card>
+
+//             {/* Categories */}
+//             <div>
+//                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+//                     <Stethoscope className="h-5 w-5" />
+//                     Specializations
+//                 </h2>
+//                 <ScrollArea className="h-[200px]">
+//                     <div className="space-y-2 pr-4">
+//                         {specializations.map((spec, index) => (
+//                             <Button
+//                                 key={index}
+//                                 onClick={() => onCategoryChange(spec.slug)}
+//                                 variant={selectedCategory === spec.slug ? "default" : "ghost"}
+//                                 className={cn(
+//                                     "w-full justify-between p-3 h-auto",
+//                                     selectedCategory === spec.slug && "bg-gradient-to-r " + spec.color
+//                                 )}
+//                             >
+//                                 <div className="flex items-center gap-3">
+//                                     <div className={cn(
+//                                         "p-1.5 rounded-md",
+//                                         selectedCategory === spec.slug
+//                                             ? "bg-white/20"
+//                                             : "bg-muted"
+//                                     )}>
+//                                         {spec.icon}
+//                                     </div>
+//                                     <span>{spec.name}</span>
+//                                 </div>
+//                                 <Badge variant={selectedCategory === spec.slug ? "secondary" : "outline"}>
+//                                     {spec.count}
+//                                 </Badge>
+//                             </Button>
+//                         ))}
+//                     </div>
+//                 </ScrollArea>
+//             </div>
+
+//             <Separator />
+
+//             {/* Filters */}
+//             <Accordion type="multiple" className="w-full">
+//                 <AccordionItem value="experience">
+//                     <AccordionTrigger className="text-sm font-medium">
+//                         Experience
+//                     </AccordionTrigger>
+//                     <AccordionContent>
+//                         <div className="grid grid-cols-2 gap-2">
+//                             {experienceOptions.map(exp => (
+//                                 <div key={exp.value} className="flex items-center space-x-2">
+//                                     <Checkbox
+//                                         id={`mob-exp-${exp.value}`}
+//                                         checked={filters.experience.includes(exp.value)}
+//                                         onCheckedChange={(checked) =>
+//                                             onFilterChange('experience', exp.value, checked)
+//                                         }
+//                                     />
+//                                     <Label htmlFor={`mob-exp-${exp.value}`} className="text-sm font-normal cursor-pointer">
+//                                         {exp.label}
+//                                     </Label>
+//                                 </div>
+//                             ))}
+//                         </div>
+//                     </AccordionContent>
+//                 </AccordionItem>
+
+//                 <AccordionItem value="rating">
+//                     <AccordionTrigger className="text-sm font-medium">
+//                         Minimum Rating
+//                     </AccordionTrigger>
+//                     <AccordionContent>
+//                         <Tabs
+//                             defaultValue="0"
+//                             value={String(filters.rating)}
+//                             onValueChange={(value) => onFilterChange('rating', Number(value))}
+//                             className="w-full"
+//                         >
+//                             <TabsList className="grid grid-cols-3">
+//                                 <TabsTrigger value="0">Any</TabsTrigger>
+//                                 <TabsTrigger value="4">4+</TabsTrigger>
+//                                 <TabsTrigger value="4.5">4.5+</TabsTrigger>
+//                             </TabsList>
+//                         </Tabs>
+//                     </AccordionContent>
+//                 </AccordionItem>
+
+//                 <AccordionItem value="availability">
+//                     <AccordionTrigger className="text-sm font-medium">
+//                         Availability
+//                     </AccordionTrigger>
+//                     <AccordionContent>
+//                         <div className="space-y-4">
+//                             <div className="flex items-center justify-between">
+//                                 <Label htmlFor="mob-available-today" className="text-sm font-normal">
+//                                     Available Today
+//                                 </Label>
+//                                 <Switch
+//                                     id="mob-available-today"
+//                                     checked={filters.availableToday}
+//                                     onCheckedChange={(checked) =>
+//                                         onFilterChange('availableToday', checked)
+//                                     }
+//                                 />
+//                             </div>
+//                             <div className="flex items-center justify-between">
+//                                 <Label htmlFor="mob-video-consult" className="text-sm font-normal">
+//                                     Video Consultation
+//                                 </Label>
+//                                 <Switch
+//                                     id="mob-video-consult"
+//                                     checked={filters.videoAvailable}
+//                                     onCheckedChange={(checked) =>
+//                                         onFilterChange('videoAvailable', checked)
+//                                     }
+//                                 />
+//                             </div>
+//                         </div>
+//                     </AccordionContent>
+//                 </AccordionItem>
+
+//                 <AccordionItem value="insurance">
+//                     <AccordionTrigger className="text-sm font-medium">
+//                         Insurance Providers
+//                     </AccordionTrigger>
+//                     <AccordionContent>
+//                         <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+//                             {insuranceOptions.map(insurance => (
+//                                 <div key={insurance} className="flex items-center space-x-2">
+//                                     <Checkbox
+//                                         id={`mob-ins-${insurance}`}
+//                                         checked={filters.insurance.includes(insurance)}
+//                                         onCheckedChange={(checked) =>
+//                                             onFilterChange('insurance', insurance, checked)
+//                                         }
+//                                     />
+//                                     <Label htmlFor={`mob-ins-${insurance}`} className="text-sm font-normal cursor-pointer">
+//                                         {insurance}
+//                                     </Label>
+//                                 </div>
+//                             ))}
+//                         </div>
+//                     </AccordionContent>
+//                 </AccordionItem>
+
+//                 <AccordionItem value="price">
+//                     <AccordionTrigger className="text-sm font-medium">
+//                         Price Range
+//                     </AccordionTrigger>
+//                     <AccordionContent>
+//                         <div className="space-y-4">
+//                             <div className="flex justify-between items-center">
+//                                 <span className="text-sm text-muted-foreground">
+//                                     ${filters.priceRange[0]} - ${filters.priceRange[1]}
+//                                 </span>
+//                             </div>
+//                             <Slider
+//                                 defaultValue={filters.priceRange}
+//                                 min={50}
+//                                 max={300}
+//                                 step={10}
+//                                 value={filters.priceRange}
+//                                 onValueChange={(value) => onFilterChange('priceRange', value)}
+//                                 className="w-full"
+//                             />
+//                             <div className="flex justify-between text-xs text-muted-foreground">
+//                                 <span>$50</span>
+//                                 <span>$300</span>
+//                             </div>
+//                         </div>
+//                     </AccordionContent>
+//                 </AccordionItem>
+//             </Accordion>
+
+//             {/* Clear Filters */}
+//             {activeFilterCount > 0 && (
+//                 <>
+//                     <Separator />
+//                     <Button
+//                         variant="outline"
+//                         onClick={() => onFilterChange('clear')}
+//                         className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+//                     >
+//                         Clear All Filters
+//                     </Button>
+//                 </>
+//             )}
+//         </div>
+//     );
+// }
+
+// export default function ModernBookingPage() {
+//     const [searchQuery, setSearchQuery] = useState('');
+//     const [selectedCategory, setSelectedCategory] = useState('all');
+//     const [filteredDoctors, setFilteredDoctors] = useState(mockDoctors);
+//     const [showFilters, setShowFilters] = useState(false);
+//     const [bookDoctor, setBookDoctor] = useState(null);
+//     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+
+//     const [filters, setFilters] = useState({
+//         experience: [],
+//         rating: 0,
+//         availableToday: false,
+//         videoAvailable: false,
+//         insurance: [],
+//         priceRange: [50, 300],
+//         languages: []
+//     });
+
+//     // Handle search
+//     const handleSearch = (query) => {
+//         setSearchQuery(query);
+//         applyFilters(query);
+//     };
+
+//     // Handle category change
+//     const handleCategoryChange = (category) => {
+//         setSelectedCategory(category);
+//         if (category === 'all' || category === 'foryou') {
+//             applyFilters(searchQuery);
+//         } else {
+//             const filtered = mockDoctors.filter(doctor =>
+//                 doctor.specialization.toLowerCase() === category.toLowerCase()
+//             );
+//             setFilteredDoctors(filtered);
+//         }
+//     };
+
+//     // Handle filter changes
+//     const handleFilterChange = (type, value, checked) => {
+//         const newFilters = { ...filters };
+
+//         switch (type) {
+//             case 'experience':
+//                 if (checked) {
+//                     newFilters.experience = [...newFilters.experience, value];
+//                 } else {
+//                     newFilters.experience = newFilters.experience.filter(v => v !== value);
+//                 }
+//                 break;
+//             case 'rating':
+//                 newFilters.rating = value;
+//                 break;
+//             case 'availableToday':
+//                 newFilters.availableToday = value;
+//                 break;
+//             case 'videoAvailable':
+//                 newFilters.videoAvailable = value;
+//                 break;
+//             case 'insurance':
+//                 if (checked) {
+//                     newFilters.insurance = [...newFilters.insurance, value];
+//                 } else {
+//                     newFilters.insurance = newFilters.insurance.filter(v => v !== value);
+//                 }
+//                 break;
+//             case 'priceRange':
+//                 newFilters.priceRange = value;
+//                 break;
+//             case 'clear':
+//                 newFilters.experience = [];
+//                 newFilters.rating = 0;
+//                 newFilters.availableToday = false;
+//                 newFilters.videoAvailable = false;
+//                 newFilters.insurance = [];
+//                 newFilters.priceRange = [50, 300];
+//                 newFilters.languages = [];
+//                 break;
+//             default:
+//                 break;
+//         }
+
+//         setFilters(newFilters);
+//         applyFilters(searchQuery, newFilters);
+//     };
+
+//     // Apply all filters
+//     const applyFilters = (query, filterState = filters) => {
+//         let result = mockDoctors;
+
+//         // Text search
+//         if (query.trim() !== '') {
+//             result = result.filter(doctor =>
+//                 doctor.name.toLowerCase().includes(query.toLowerCase()) ||
+//                 doctor.specialization.toLowerCase().includes(query.toLowerCase()) ||
+//                 doctor.expertise.some(e => e.toLowerCase().includes(query.toLowerCase()))
+//             );
+//         }
+
+//         // Category filter
+//         if (selectedCategory !== 'all' && selectedCategory !== 'foryou') {
+//             result = result.filter(doctor =>
+//                 doctor.specialization.toLowerCase() === selectedCategory.toLowerCase()
+//             );
+//         }
+
+//         // Experience filter
+//         if (filterState.experience.length > 0) {
+//             result = result.filter(doctor => {
+//                 const expYears = parseInt(doctor.experience);
+//                 return filterState.experience.some(minExp => expYears >= minExp);
+//             });
+//         }
+
+//         // Rating filter
+//         if (filterState.rating > 0) {
+//             result = result.filter(doctor => doctor.rating >= filterState.rating);
+//         }
+
+//         // Availability filters
+//         if (filterState.availableToday) {
+//             result = result.filter(doctor =>
+//                 doctor.available.some(slot => slot.date === 'Today')
+//             );
+//         }
+
+//         if (filterState.videoAvailable) {
+//             result = result.filter(doctor =>
+//                 doctor.available.some(slot => slot.type === 'video')
+//             );
+//         }
+
+//         // Insurance filter
+//         if (filterState.insurance.length > 0) {
+//             result = result.filter(doctor =>
+//                 filterState.insurance.some(ins => doctor.insurance.includes(ins))
+//             );
+//         }
+
+//         // Price filter
+//         result = result.filter(doctor =>
+//             doctor.price >= filterState.priceRange[0] &&
+//             doctor.price <= filterState.priceRange[1]
+//         );
+
+//         setFilteredDoctors(result);
+//     };
+
+//     // Handle booking
+//     const handleBookDoctor = (doctor) => {
+//         setBookDoctor(doctor);
+//         // You can add modal or navigation logic here
+//         alert(`Booking appointment with ${doctor.name}`);
+//     };
+
+//     const categoryName = specializations.find(s => s.slug === selectedCategory)?.name || 'All Doctors';
+
+//     return (
+//         <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+//             {/* Sidebar */}
+//             <Sidebar
+//                 selectedCategory={selectedCategory}
+//                 onCategoryChange={handleCategoryChange}
+//                 filters={filters}
+//                 onFilterChange={handleFilterChange}
+//                 showFilters={showFilters}
+//                 mockDoctors={mockDoctors}
+//                 specializations={specializations}
+//             />
+
+//             {/* Main Content */}
+//             <main className="flex-1 p-4 lg:p-8">
+//                 <div className="max-w-7xl mx-auto">
+//                     <Header
+//                         searchQuery={searchQuery}
+//                         handleSearch={handleSearch}
+//                         setViewMode={setViewMode}
+//                         setShowFilters={setShowFilters}
+//                         showFilters={showFilters}
+//                         filteredDoctors={filteredDoctors}
+//                         categoryName={categoryName}
+//                         mockDoctors={mockDoctors}
+//                         viewMode={viewMode}
+//                     />
+
+//                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 mt-4">
+//                         <div>
+//                             <h2 className="text-xl lg:text-2xl font-bold text-gray-800">{categoryName}</h2>
+//                             <p className="text-gray-500 mt-1 text-sm lg:text-base">
+//                                 {filteredDoctors.length} doctors found •
+//                                 <span className="text-green-600 ml-2">Sort by: Recommended</span>
+//                             </p>
+//                         </div>
+
+//                         <div className="flex items-center gap-3">
+//                             <div className="text-sm text-gray-600 hidden sm:flex items-center">
+//                                 <TrendingUp className="w-4 h-4 inline mr-1" />
+//                                 <span>Top picks for you</span>
+//                             </div>
+//                             <button className="px-4 py-2 bg-blue-50 text-blue-700 font-medium rounded-xl hover:bg-blue-100 transition-colors text-sm lg:text-base">
+//                                 Sort
+//                             </button>
+//                         </div>
+//                     </div>
+
+//                     {/* Doctors Grid/List */}
+//                     {filteredDoctors.length > 0 ? (
+//                         <div
+//                             className={`
+//                                 ${viewMode === 'grid'
+//                                 ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+//                                 : 'space-y-4'}
+//                             `}
+//                         >
+//                             {filteredDoctors.map((doctor) => (
+//                                 <DoctorCard
+//                                     key={doctor.id}
+//                                     doctor={doctor}
+//                                     onBook={handleBookDoctor}
+//                                     viewMode={viewMode}
+//                                 />
+//                             ))}
+//                         </div>
+//                     ) : (
+//                         <div className="text-center py-12 lg:py-16 bg-white rounded-2xl shadow-sm border border-gray-100 mx-2 lg:mx-0">
+//                             <div className="inline-block p-4 lg:p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full mb-4">
+//                                 <Search className="w-8 h-8 lg:w-12 lg:h-12 text-blue-400" />
+//                             </div>
+//                             <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-2">No matching doctors found</h3>
+//                             <p className="text-gray-500 mb-6 px-4 lg:px-0">Try adjusting your search or filters to find what you're looking for</p>
+//                             <button
+//                                 onClick={() => {
+//                                     handleSearch('');
+//                                     handleFilterChange('clear');
+//                                 }}
+//                                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg transition-all text-sm lg:text-base"
+//                             >
+//                                 Clear All Filters
+//                             </button>
+//                         </div>
+//                     )}
+
+//                     {/* Load More & Pagination */}
+//                     {filteredDoctors.length > 0 && (
+//                         <div className="mt-8 lg:mt-12 px-2 lg:px-0">
+//                             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+//                                 <div className="text-sm text-gray-500">
+//                                     Showing 1-{Math.min(filteredDoctors.length, 6)} of {filteredDoctors.length} doctors
+//                                 </div>
+//                                 <div className="flex items-center gap-2 flex-wrap">
+//                                     <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+//                                         Previous
+//                                     </button>
+//                                     <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm">
+//                                         1
+//                                     </button>
+//                                     <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+//                                         2
+//                                     </button>
+//                                     <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+//                                         Next
+//                                     </button>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     )}
+//                 </div>
+//             </main>
+
+//             {/* Quick Booking Modal */}
+//             {bookDoctor && (
+//                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+//                     <div className="bg-white rounded-2xl max-w-lg w-full p-6">
+//                         <div className="flex items-center justify-between mb-6">
+//                             <h3 className="text-xl font-bold text-gray-800">Confirm Appointment</h3>
+//                             <button
+//                                 onClick={() => setBookDoctor(null)}
+//                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+//                             >
+//                                 <X className="w-5 h-5" />
+//                             </button>
+//                         </div>
+//                         <div className="space-y-4">
+//                             <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-xl">
+//                                 <img src={bookDoctor.image} alt={bookDoctor.name} className="w-16 h-16 rounded-xl object-cover" />
+//                                 <div>
+//                                     <h4 className="font-bold text-gray-800">{bookDoctor.name}</h4>
+//                                     <p className="text-sm text-gray-600">{bookDoctor.specialization}</p>
+//                                 </div>
+//                             </div>
+//                             <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
+//                                 Confirm Booking for ${bookDoctor.price}
+//                             </button>
+//                         </div>
+//                     </div>
+//                 </div>
+//             )}
+
+//             {/* Floating Action Button */}
+//             <button className="fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-40 p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110">
+//                 <Calendar className="w-6 h-6" />
+//             </button>
+//         </div>
+//     );
+// }
+// 'use client'
+// import React, { useState, useCallback } from 'react';
+// import {
+//     Search,
+//     Filter,
+//     Star,
+//     Clock,
+//     Calendar,
+//     Heart,
+//     Stethoscope,
+//     Bone,
+//     Ear,
+//     Eye,
+//     UserRound,
+//     Award,
+//     ChevronRight,
+//     TrendingUp,
+//     Video,
+//     X,
+//     Moon,
+//     Sun,
+// } from 'lucide-react';
+// import Header from "@/app/Booking/Header.js";
+// import DoctorCard from "@/components/newcomponents/booking/DoctorCard.jsx";
+// import { Card, CardContent } from "@/components/ui/card.jsx";
+// import { Badge } from "@/components/ui/badge.jsx";
+// import { ScrollArea } from "@/components/ui/scroll-area.jsx";
+// import { Button } from "@/components/ui/button.jsx";
+// import { cn } from "@/lib/utils.js";
+// import { Separator } from "@/components/ui/separator.jsx";
+// import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion.jsx";
+// import { Checkbox } from "@/components/ui/checkbox.jsx";
+// import { Label } from "@/components/ui/label.jsx";
+// import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs.jsx";
+// import { Switch } from "@/components/ui/switch.jsx";
+// import { Slider } from "@/components/ui/slider.jsx";
+// import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet.jsx";
+
+// // ---------------------------------------------------------------------------
+// // Constants (outside component so they are never re-created on render)
+// // ---------------------------------------------------------------------------
+
+// const TODAY_DAY = new Date().getDay(); // 0 = Sunday … 6 = Saturday
+
+// /**
+//  * Unified available-slot format: { day: number, time: string, type: string }
+//  * `day` follows JS convention: 0 = Sunday, 1 = Monday, … 6 = Saturday
+//  */
+// const mockDoctors = [
+//     {
+//         id: 1,
+//         name: 'Dr. Sarah Johnson',
+//         specialization: 'Cardiologist',
+//         expertise: ['Heart Disease', 'Hypertension', 'Arrhythmia', 'Heart Failure'],
+//         image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400',
+//         rating: 4.9,
+//         reviews: 156,
+//         patients: 1200,
+//         experience: '15 years',
+//         location: 'New York Medical Center',
+//         distance: '2.3 miles',
+//         available: [
+//             { day: 1, time: '14:00', type: 'cabinet' },
+//             { day: 1, time: '16:30', type: 'video' },
+//             { day: 3, time: '10:00', type: 'cabinet' },
+//         ],
+//         price: 150,
+//         insurance: ['Aetna', 'Blue Cross', 'UnitedHealth'],
+//         languages: ['English', 'Spanish', 'French'],
+//         availabilityScore: 95,
+//         responseTime: '15 min',
+//         verified: true,
+//         featured: true,
+//         awards: ['Best Cardiologist 2023', 'Top Doctor Award'],
+//         waitTime: '5 min',
+//     },
+//     {
+//         id: 2,
+//         name: 'Dr. Michael Chen',
+//         specialization: 'Dentist',
+//         expertise: ['Cosmetic Dentistry', 'Implants', 'Orthodontics', 'Root Canal'],
+//         image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400',
+//         rating: 4.8,
+//         reviews: 132,
+//         patients: 980,
+//         experience: '12 years',
+//         location: 'Downtown Dental Clinic',
+//         distance: '1.5 miles',
+//         available: [
+//             { day: TODAY_DAY, time: '11:00', type: 'cabinet' },
+//             { day: TODAY_DAY, time: '09:00', type: 'video' },
+//         ],
+//         price: 120,
+//         insurance: ['Cigna', 'Delta Dental', 'MetLife'],
+//         languages: ['English', 'Mandarin'],
+//         availabilityScore: 88,
+//         responseTime: '20 min',
+//         verified: true,
+//         featured: false,
+//         awards: ['Dental Excellence Award'],
+//         waitTime: '10 min',
+//     },
+//     {
+//         id: 3,
+//         name: 'Dr. Emily Rodriguez',
+//         specialization: 'Orthopedic',
+//         expertise: ['Sports Injury', 'Joint Replacement', 'Arthritis', 'Fracture Care'],
+//         image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400',
+//         rating: 4.9,
+//         reviews: 189,
+//         patients: 1100,
+//         experience: '18 years',
+//         location: 'City Orthopedic Hospital',
+//         distance: '3.1 miles',
+//         available: [
+//             { day: 4, time: '16:00', type: 'cabinet' },
+//             { day: 4, time: '11:30', type: 'video' },
+//         ],
+//         price: 180,
+//         insurance: ['Aetna', 'Blue Cross', 'Cigna', 'Medicare'],
+//         languages: ['English', 'Spanish'],
+//         availabilityScore: 92,
+//         responseTime: '10 min',
+//         verified: true,
+//         featured: true,
+//         awards: ['Orthopedic Surgeon of the Year'],
+//         waitTime: '15 min',
+//     },
+//     {
+//         id: 4,
+//         name: 'Dr. James Wilson',
+//         specialization: 'Otology',
+//         expertise: ['Hearing Loss', 'Tinnitus', 'Ear Infections', 'Balance Disorders'],
+//         image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400',
+//         rating: 4.7,
+//         reviews: 98,
+//         patients: 850,
+//         experience: '10 years',
+//         location: 'ENT Specialists Center',
+//         distance: '4.5 miles',
+//         available: [
+//             { day: 2, time: '09:00', type: 'cabinet' },
+//             { day: 2, time: '14:00', type: 'video' },
+//         ],
+//         price: 140,
+//         insurance: ['UnitedHealth', 'Aetna'],
+//         languages: ['English'],
+//         availabilityScore: 85,
+//         responseTime: '25 min',
+//         verified: true,
+//         featured: false,
+//         awards: [],
+//         waitTime: '20 min',
+//     },
+//     {
+//         id: 5,
+//         name: 'Dr. Lisa Thompson',
+//         specialization: 'Dentist',
+//         expertise: ['Pediatric Dentistry', 'Preventive Care', 'Teeth Whitening'],
+//         image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+//         rating: 4.8,
+//         reviews: 145,
+//         patients: 920,
+//         experience: '14 years',
+//         location: 'Smile Dental Care',
+//         distance: '2.8 miles',
+//         available: [
+//             { day: TODAY_DAY, time: '13:00', type: 'cabinet' },
+//             { day: TODAY_DAY, time: '15:30', type: 'video' },
+//         ],
+//         price: 130,
+//         insurance: ['Delta Dental', 'Cigna', 'Guardian'],
+//         languages: ['English', 'Arabic'],
+//         availabilityScore: 90,
+//         responseTime: '18 min',
+//         verified: true,
+//         featured: true,
+//         awards: ['Best Family Dentist'],
+//         waitTime: '8 min',
+//     },
+//     {
+//         id: 6,
+//         name: 'Dr. Robert Martinez',
+//         specialization: 'Cardiologist',
+//         expertise: ['Cardiac Surgery', 'Angioplasty', 'Heart Transplant', 'Preventive Cardiology'],
+//         image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400',
+//         rating: 4.9,
+//         reviews: 203,
+//         patients: 1350,
+//         experience: '20 years',
+//         location: 'Heart Health Institute',
+//         distance: '5.2 miles',
+//         available: [
+//             { day: 5, time: '15:00', type: 'cabinet' },
+//             { day: 4, time: '10:00', type: 'video' },
+//         ],
+//         price: 200,
+//         insurance: ['Blue Cross', 'UnitedHealth', 'Medicare', 'Aetna'],
+//         languages: ['English', 'Spanish', 'Portuguese'],
+//         availabilityScore: 80,
+//         responseTime: '30 min',
+//         verified: true,
+//         featured: true,
+//         awards: ['Lifetime Achievement Award', 'Top Cardiologist 5 Years'],
+//         waitTime: '25 min',
+//     },
+// ];
+
+// const specializations = [
+//     {
+//         name: 'All Doctors',
+//         icon: <UserRound className="w-5 h-5" />,
+//         color: 'from-blue-500 to-cyan-500',
+//         slug: 'all',
+//         count: mockDoctors.length,
+//     },
+//     {
+//         name: 'Dentist',
+//         icon: <Stethoscope className="w-5 h-5" />,
+//         color: 'from-blue-500 to-indigo-500',
+//         slug: 'dentist',
+//         count: mockDoctors.filter(d => d.specialization === 'Dentist').length,
+//     },
+//     {
+//         name: 'Cardiologist',
+//         icon: <Heart className="w-5 h-5" />,
+//         color: 'from-red-500 to-pink-500',
+//         slug: 'cardiologist',
+//         count: mockDoctors.filter(d => d.specialization === 'Cardiologist').length,
+//     },
+//     {
+//         name: 'Orthopedic',
+//         icon: <Bone className="w-5 h-5" />,
+//         color: 'from-green-500 to-emerald-500',
+//         slug: 'orthopedic',
+//         count: mockDoctors.filter(d => d.specialization === 'Orthopedic').length,
+//     },
+//     {
+//         name: 'Otology',
+//         icon: <Ear className="w-5 h-5" />,
+//         color: 'from-purple-500 to-indigo-500',
+//         slug: 'otology',
+//         count: mockDoctors.filter(d => d.specialization === 'Otology').length,
+//     },
+//     {
+//         name: 'Eye Doctor',
+//         icon: <Eye className="w-5 h-5" />,
+//         color: 'from-amber-500 to-orange-500',
+//         slug: 'eyedoctor',
+//         count: 0,
+//     },
+//     {
+//         name: 'For You',
+//         icon: <TrendingUp className="w-5 h-5" />,
+//         color: 'from-pink-500 to-rose-500',
+//         slug: 'foryou',
+//         count: 3,
+//     },
+// ];
+
+// const INSURANCE_OPTIONS = ['Aetna', 'Blue Cross', 'Cigna', 'UnitedHealth', 'Medicare', 'Delta Dental'];
+// const EXPERIENCE_OPTIONS = [
+//     { label: '5+ years', value: 5 },
+//     { label: '10+ years', value: 10 },
+//     { label: '15+ years', value: 15 },
+// ];
+// const DEFAULT_FILTERS = {
+//     experience: [],
+//     rating: 0,
+//     availableToday: false,
+//     videoAvailable: false,
+//     insurance: [],
+//     priceRange: [50, 300],
+//     languages: [],
+// };
+
+// // ---------------------------------------------------------------------------
+// // Pure filter function (no dependency on component state — easy to test)
+// // ---------------------------------------------------------------------------
+// function computeFilteredDoctors(doctors, query, category, filters) {
+//     let result = doctors;
+
+//     // Text search
+//     const q = query.trim().toLowerCase();
+//     if (q) {
+//         result = result.filter(
+//             d =>
+//                 d.name.toLowerCase().includes(q) ||
+//                 d.specialization.toLowerCase().includes(q) ||
+//                 d.expertise.some(e => e.toLowerCase().includes(q))
+//         );
+//     }
+
+//     // Category
+//     if (category !== 'all' && category !== 'foryou') {
+//         result = result.filter(
+//             d => d.specialization.toLowerCase() === category.toLowerCase()
+//         );
+//     }
+
+//     // Experience
+//     if (filters.experience.length > 0) {
+//         result = result.filter(d => {
+//             const years = parseInt(d.experience, 10);
+//             return filters.experience.some(min => years >= min);
+//         });
+//     }
+
+//     // Rating
+//     if (filters.rating > 0) {
+//         result = result.filter(d => d.rating >= filters.rating);
+//     }
+
+//     // Available today
+//     if (filters.availableToday) {
+//         result = result.filter(d =>
+//             d.available.some(slot => slot.day === TODAY_DAY)
+//         );
+//     }
+
+//     // Video available
+//     if (filters.videoAvailable) {
+//         result = result.filter(d =>
+//             d.available.some(slot => slot.type === 'video')
+//         );
+//     }
+
+//     // Insurance
+//     if (filters.insurance.length > 0) {
+//         result = result.filter(d =>
+//             filters.insurance.some(ins => d.insurance?.includes(ins))
+//         );
+//     }
+
+//     // Price range
+//     result = result.filter(
+//         d => d.price >= filters.priceRange[0] && d.price <= filters.priceRange[1]
+//     );
+
+//     return result;
+// }
+
+// // ---------------------------------------------------------------------------
+// // Sidebar (desktop + mobile sheet)
+// // ---------------------------------------------------------------------------
+// function Sidebar({ selectedCategory, onCategoryChange, filters, onFilterChange }) {
+//     const [darkMode, setDarkMode] = useState(false);
+
+//     const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
+//         if (Array.isArray(value)) {
+//             // priceRange is only "active" when it differs from the default
+//             if (key === 'priceRange') return value[0] !== 50 || value[1] !== 300 ? count + 1 : count;
+//             return count + value.length;
+//         }
+//         if (typeof value === 'boolean') return value ? count + 1 : count;
+//         if (typeof value === 'number') return value > 0 ? count + 1 : count;
+//         return count;
+//     }, 0);
+
+//     const sidebarContent = (
+//         <SidebarContent
+//             selectedCategory={selectedCategory}
+//             onCategoryChange={onCategoryChange}
+//             filters={filters}
+//             onFilterChange={onFilterChange}
+//             darkMode={darkMode}
+//             setDarkMode={setDarkMode}
+//             activeFilterCount={activeFilterCount}
+//         />
+//     );
+
+//     return (
+//         <>
+//             {/* Mobile Filter FAB */}
+//             <div className="lg:hidden fixed bottom-20 right-4 z-50">
+//                 <Sheet>
+//                     <SheetTrigger asChild>
+//                         <Button className="rounded-full w-14 h-14 shadow-2xl relative" size="icon">
+//                             <Filter className="h-6 w-6" />
+//                             {activeFilterCount > 0 && (
+//                                 <Badge className="absolute -top-1 -right-1 px-2 min-w-5 h-5 flex items-center justify-center">
+//                                     {activeFilterCount}
+//                                 </Badge>
+//                             )}
+//                         </Button>
+//                     </SheetTrigger>
+//                     <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
+//                         <SheetHeader className="mb-6">
+//                             <SheetTitle className="flex items-center gap-2">
+//                                 <Filter className="h-5 w-5" />
+//                                 Filters & Categories
+//                             </SheetTitle>
+//                         </SheetHeader>
+//                         <div className="pb-6">{sidebarContent}</div>
+//                     </SheetContent>
+//                 </Sheet>
+//             </div>
+
+//             {/* Desktop Sidebar */}
+//             <aside className="hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] bg-white shadow-xl rounded-2xl border border-gray-100 overflow-y-auto sticky top-4">
+//                 <div className="p-6">
+//                     {/* Header */}
+//                     <div className="mb-8">
+//                         <div className="flex items-center justify-between mb-4">
+//                             <div className="flex items-center gap-3">
+//                                 <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+//                                     <Calendar className="w-5 h-5 text-white" />
+//                                 </div>
+//                                 <div>
+//                                     <h1 className="text-xl font-bold text-gray-800">Find Doctors</h1>
+//                                     <p className="text-sm text-gray-500">Book appointments easily</p>
+//                                 </div>
+//                             </div>
+//                             <button
+//                                 onClick={() => setDarkMode(!darkMode)}
+//                                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+//                                 aria-label="Toggle dark mode"
+//                             >
+//                                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+//                             </button>
+//                         </div>
+//                     </div>
+
+//                     {sidebarContent}
+//                 </div>
+//             </aside>
+//         </>
+//     );
+// }
+
+// function SidebarContent({
+//     selectedCategory,
+//     onCategoryChange,
+//     filters,
+//     onFilterChange,
+//     activeFilterCount,
+// }) {
+//     return (
+//         <div className="space-y-6">
+//             {/* Active filter summary */}
+//             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4">
+//                 <div className="flex items-center justify-between mb-2">
+//                     <span className="text-sm font-medium text-gray-700">Active Filters</span>
+//                     <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+//                         {activeFilterCount} active
+//                     </span>
+//                 </div>
+//                 <div className="text-sm text-gray-600">
+//                     Showing {mockDoctors.length} doctors in your area
+//                 </div>
+//             </div>
+
+//             {/* Specializations */}
+//             <div>
+//                 <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+//                     <Stethoscope className="w-5 h-5" />
+//                     Specializations
+//                 </h2>
+//                 <nav className="space-y-2">
+//                     {specializations.map((spec, index) => (
+//                         <button
+//                             key={index}
+//                             onClick={() => onCategoryChange(spec.slug)}
+//                             className={`w-full group flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
+//                                 selectedCategory === spec.slug
+//                                     ? 'bg-gradient-to-r ' + spec.color + ' text-white shadow-lg'
+//                                     : 'hover:bg-gray-50 text-gray-700'
+//                             }`}
+//                         >
+//                             <div className="flex items-center gap-3">
+//                                 <div className={`p-1.5 rounded-lg ${
+//                                     selectedCategory === spec.slug
+//                                         ? 'bg-white/20'
+//                                         : 'bg-gray-100 group-hover:bg-gray-200'
+//                                 }`}>
+//                                     {spec.icon}
+//                                 </div>
+//                                 <span className="font-medium">{spec.name}</span>
+//                             </div>
+//                             <div className="flex items-center gap-2">
+//                                 <span className={`text-xs px-2 py-1 rounded-full ${
+//                                     selectedCategory === spec.slug
+//                                         ? 'bg-white/30'
+//                                         : 'bg-gray-100 text-gray-600'
+//                                 }`}>
+//                                     {spec.count}
+//                                 </span>
+//                                 <ChevronRight className={`w-4 h-4 ${
+//                                     selectedCategory === spec.slug
+//                                         ? ''
+//                                         : 'text-gray-400 group-hover:translate-x-1 transition-transform'
+//                                 }`} />
+//                             </div>
+//                         </button>
+//                     ))}
+//                 </nav>
+//             </div>
+
+//             <Separator />
+
+//             {/* Filters */}
+//             <div>
+//                 <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+//                     <Filter className="w-4 h-4" />
+//                     Filters
+//                 </h3>
+
+//                 <Accordion type="multiple" className="w-full">
+//                     {/* Experience */}
+//                     <AccordionItem value="experience">
+//                         <AccordionTrigger className="text-sm font-medium">Experience</AccordionTrigger>
+//                         <AccordionContent>
+//                             <div className="space-y-2">
+//                                 {EXPERIENCE_OPTIONS.map(exp => (
+//                                     <div key={exp.value} className="flex items-center gap-2">
+//                                         <Checkbox
+//                                             id={`exp-${exp.value}`}
+//                                             checked={filters.experience.includes(exp.value)}
+//                                             onCheckedChange={checked =>
+//                                                 onFilterChange('experience', exp.value, checked)
+//                                             }
+//                                         />
+//                                         <Label htmlFor={`exp-${exp.value}`} className="text-sm font-normal cursor-pointer">
+//                                             {exp.label}
+//                                         </Label>
+//                                     </div>
+//                                 ))}
+//                             </div>
+//                         </AccordionContent>
+//                     </AccordionItem>
+
+//                     {/* Rating */}
+//                     <AccordionItem value="rating">
+//                         <AccordionTrigger className="text-sm font-medium">Minimum Rating</AccordionTrigger>
+//                         <AccordionContent>
+//                             <div className="flex items-center gap-2 flex-wrap">
+//                                 {[0, 4, 4.5, 5].map(rating => (
+//                                     <button
+//                                         key={rating}
+//                                         onClick={() => onFilterChange('rating', rating)}
+//                                         className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+//                                             filters.rating === rating
+//                                                 ? 'bg-blue-100 text-blue-700'
+//                                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+//                                         }`}
+//                                     >
+//                                         {rating === 0 ? (
+//                                             'Any'
+//                                         ) : (
+//                                             <>
+//                                                 <Star className="w-3 h-3" />
+//                                                 {rating}+
+//                                             </>
+//                                         )}
+//                                     </button>
+//                                 ))}
+//                             </div>
+//                         </AccordionContent>
+//                     </AccordionItem>
+
+//                     {/* Availability */}
+//                     <AccordionItem value="availability">
+//                         <AccordionTrigger className="text-sm font-medium">Availability</AccordionTrigger>
+//                         <AccordionContent>
+//                             <div className="space-y-4">
+//                                 <div className="flex items-center justify-between">
+//                                     <Label htmlFor="available-today" className="text-sm font-normal cursor-pointer">
+//                                         Available Today
+//                                     </Label>
+//                                     <Switch
+//                                         id="available-today"
+//                                         checked={filters.availableToday}
+//                                         onCheckedChange={checked => onFilterChange('availableToday', checked)}
+//                                     />
+//                                 </div>
+//                                 <div className="flex items-center justify-between">
+//                                     <Label htmlFor="video-consult" className="text-sm font-normal cursor-pointer">
+//                                         Video Consultation
+//                                     </Label>
+//                                     <Switch
+//                                         id="video-consult"
+//                                         checked={filters.videoAvailable}
+//                                         onCheckedChange={checked => onFilterChange('videoAvailable', checked)}
+//                                     />
+//                                 </div>
+//                             </div>
+//                         </AccordionContent>
+//                     </AccordionItem>
+
+//                     {/* Insurance */}
+//                     <AccordionItem value="insurance">
+//                         <AccordionTrigger className="text-sm font-medium">Insurance Providers</AccordionTrigger>
+//                         <AccordionContent>
+//                             <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+//                                 {INSURANCE_OPTIONS.map(ins => (
+//                                     <div key={ins} className="flex items-center gap-2">
+//                                         <Checkbox
+//                                             id={`ins-${ins}`}
+//                                             checked={filters.insurance.includes(ins)}
+//                                             onCheckedChange={checked =>
+//                                                 onFilterChange('insurance', ins, checked)
+//                                             }
+//                                         />
+//                                         <Label htmlFor={`ins-${ins}`} className="text-sm font-normal cursor-pointer">
+//                                             {ins}
+//                                         </Label>
+//                                     </div>
+//                                 ))}
+//                             </div>
+//                         </AccordionContent>
+//                     </AccordionItem>
+
+//                     {/* Price Range */}
+//                     <AccordionItem value="price">
+//                         <AccordionTrigger className="text-sm font-medium">Price Range</AccordionTrigger>
+//                         <AccordionContent>
+//                             <div className="space-y-4">
+//                                 <div className="flex justify-between text-sm text-muted-foreground">
+//                                     <span>${filters.priceRange[0]}</span>
+//                                     <span>${filters.priceRange[1]}</span>
+//                                 </div>
+//                                 <Slider
+//                                     min={50}
+//                                     max={300}
+//                                     step={10}
+//                                     value={filters.priceRange}
+//                                     onValueChange={value => onFilterChange('priceRange', value)}
+//                                     className="w-full"
+//                                 />
+//                                 <div className="flex justify-between text-xs text-muted-foreground">
+//                                     <span>$50</span>
+//                                     <span>$300</span>
+//                                 </div>
+//                             </div>
+//                         </AccordionContent>
+//                     </AccordionItem>
+//                 </Accordion>
+//             </div>
+
+//             {/* Clear Filters */}
+//             {activeFilterCount > 0 && (
+//                 <>
+//                     <Separator />
+//                     <Button
+//                         variant="outline"
+//                         onClick={() => onFilterChange('clear')}
+//                         className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+//                     >
+//                         Clear All Filters
+//                     </Button>
+//                 </>
+//             )}
+//         </div>
+//     );
+// }
+
+// // ---------------------------------------------------------------------------
+// // Main page
+// // ---------------------------------------------------------------------------
+// export default function ModernBookingPage() {
+//     const [searchQuery, setSearchQuery] = useState('');
+//     const [selectedCategory, setSelectedCategory] = useState('all');
+//     const [filters, setFilters] = useState(DEFAULT_FILTERS);
+//     const [bookDoctor, setBookDoctor] = useState(null);
+//     const [viewMode, setViewMode] = useState('grid');
+//     const [showFilters, setShowFilters] = useState(false);
+
+//     // Derived state — computed on every render (fast, no stale-closure issues)
+//     const filteredDoctors = computeFilteredDoctors(
+//         mockDoctors,
+//         searchQuery,
+//         selectedCategory,
+//         filters
+//     );
+
+//     const handleSearch = useCallback((query) => {
+//         setSearchQuery(query);
+//     }, []);
+
+//     const handleCategoryChange = useCallback((category) => {
+//         setSelectedCategory(category);
+//     }, []);
+
+//     const handleFilterChange = useCallback((type, value, checked) => {
+//         setFilters(prev => {
+//             switch (type) {
+//                 case 'experience':
+//                     return {
+//                         ...prev,
+//                         experience: checked
+//                             ? [...prev.experience, value]
+//                             : prev.experience.filter(v => v !== value),
+//                     };
+//                 case 'rating':
+//                     return { ...prev, rating: value };
+//                 case 'availableToday':
+//                     return { ...prev, availableToday: value };
+//                 case 'videoAvailable':
+//                     return { ...prev, videoAvailable: value };
+//                 case 'insurance':
+//                     return {
+//                         ...prev,
+//                         insurance: checked
+//                             ? [...prev.insurance, value]
+//                             : prev.insurance.filter(v => v !== value),
+//                     };
+//                 case 'priceRange':
+//                     return { ...prev, priceRange: value };
+//                 case 'clear':
+//                     return { ...DEFAULT_FILTERS };
+//                 default:
+//                     return prev;
+//             }
+//         });
+//     }, []);
+
+//     const categoryName =
+//         specializations.find(s => s.slug === selectedCategory)?.name ?? 'All Doctors';
+
+//     return (
+//         <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+//             <Sidebar
+//                 selectedCategory={selectedCategory}
+//                 onCategoryChange={handleCategoryChange}
+//                 filters={filters}
+//                 onFilterChange={handleFilterChange}
+//             />
+
+//             <main className="flex-1 p-4 lg:p-8">
+//                 <div className="max-w-7xl mx-auto">
+//                     <Header
+//                         searchQuery={searchQuery}
+//                         handleSearch={handleSearch}
+//                         setViewMode={setViewMode}
+//                         setShowFilters={setShowFilters}
+//                         showFilters={showFilters}
+//                         filteredDoctors={filteredDoctors}
+//                         categoryName={categoryName}
+//                         mockDoctors={mockDoctors}
+//                         viewMode={viewMode}
+//                     />
+
+//                     {/* Results header */}
+//                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 mt-4">
+//                         <div>
+//                             <h2 className="text-xl lg:text-2xl font-bold text-gray-800">{categoryName}</h2>
+//                             <p className="text-gray-500 mt-1 text-sm lg:text-base">
+//                                 {filteredDoctors.length} doctors found •
+//                                 <span className="text-green-600 ml-2">Sort by: Recommended</span>
+//                             </p>
+//                         </div>
+//                         <div className="flex items-center gap-3">
+//                             <div className="text-sm text-gray-600 hidden sm:flex items-center">
+//                                 <TrendingUp className="w-4 h-4 inline mr-1" />
+//                                 <span>Top picks for you</span>
+//                             </div>
+//                             <button className="px-4 py-2 bg-blue-50 text-blue-700 font-medium rounded-xl hover:bg-blue-100 transition-colors text-sm lg:text-base">
+//                                 Sort
+//                             </button>
+//                         </div>
+//                     </div>
+
+//                     {/* Doctor cards */}
+//                     {filteredDoctors.length > 0 ? (
+//                         <div className={
+//                             viewMode === 'grid'
+//                                 ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+//                                 : 'space-y-4'
+//                         }>
+//                             {filteredDoctors.map(doctor => (
+//                                 <DoctorCard
+//                                     key={doctor.id}
+//                                     doctor={doctor}
+//                                     onBook={setBookDoctor}
+//                                     viewMode={viewMode}
+//                                 />
+//                             ))}
+//                         </div>
+//                     ) : (
+//                         <div className="text-center py-12 lg:py-16 bg-white rounded-2xl shadow-sm border border-gray-100 mx-2 lg:mx-0">
+//                             <div className="inline-block p-4 lg:p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full mb-4">
+//                                 <Search className="w-8 h-8 lg:w-12 lg:h-12 text-blue-400" />
+//                             </div>
+//                             <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-2">
+//                                 No matching doctors found
+//                             </h3>
+//                             <p className="text-gray-500 mb-6 px-4 lg:px-0">
+//                                 Try adjusting your search or filters to find what you're looking for
+//                             </p>
+//                             <button
+//                                 onClick={() => {
+//                                     handleSearch('');
+//                                     handleFilterChange('clear');
+//                                     handleCategoryChange('all');
+//                                 }}
+//                                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg transition-all text-sm lg:text-base"
+//                             >
+//                                 Clear All Filters
+//                             </button>
+//                         </div>
+//                     )}
+
+//                     {/* Pagination */}
+//                     {filteredDoctors.length > 0 && (
+//                         <div className="mt-8 lg:mt-12 px-2 lg:px-0">
+//                             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+//                                 <div className="text-sm text-gray-500">
+//                                     Showing 1–{Math.min(filteredDoctors.length, 6)} of {filteredDoctors.length} doctors
+//                                 </div>
+//                                 <div className="flex items-center gap-2 flex-wrap">
+//                                     <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+//                                         Previous
+//                                     </button>
+//                                     <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm">
+//                                         1
+//                                     </button>
+//                                     <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+//                                         2
+//                                     </button>
+//                                     <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+//                                         Next
+//                                     </button>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     )}
+//                 </div>
+//             </main>
+
+//             {/* Quick Booking Modal */}
+//             {bookDoctor && (
+//                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+//                     <div className="bg-white rounded-2xl max-w-lg w-full p-6">
+//                         <div className="flex items-center justify-between mb-6">
+//                             <h3 className="text-xl font-bold text-gray-800">Confirm Appointment</h3>
+//                             <button
+//                                 onClick={() => setBookDoctor(null)}
+//                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+//                                 aria-label="Close"
+//                             >
+//                                 <X className="w-5 h-5" />
+//                             </button>
+//                         </div>
+//                         <div className="space-y-4">
+//                             <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-xl">
+//                                 <img
+//                                     src={bookDoctor.image}
+//                                     alt={bookDoctor.name}
+//                                     className="w-16 h-16 rounded-xl object-cover"
+//                                 />
+//                                 <div>
+//                                     <h4 className="font-bold text-gray-800">{bookDoctor.name}</h4>
+//                                     <p className="text-sm text-gray-600">{bookDoctor.specialization}</p>
+//                                 </div>
+//                             </div>
+//                             <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
+//                                 Confirm Booking for ${bookDoctor.price}
+//                             </button>
+//                         </div>
+//                     </div>
+//                 </div>
+//             )}
+
+//             {/* Floating Action Button */}
+//             <button
+//                 className="fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-40 p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110"
+//                 aria-label="Open calendar"
+//             >
+//                 <Calendar className="w-6 h-6" />
+//             </button>
+//         </div>
+//     );
+// }
+'use client';
+// app/Booking/page.jsx
+// "All Doctors" page — the default route at /Booking.
+// Applies filters from context on top of the full doctor list.
+
+import { useBooking } from '@/utils/BookingContext';
+// import { mockDoctors } from '@/data/doctors';
+import { filterDoctors } from '@/utils/filterDoctors';
+import Header from './Header'; // your existing Header component
+import ResultsHeader from '@/components/newcomponents/booking/ResultsHeader';
+import DoctorsGrid from '../../components/newcomponents/booking/DoctorsGrid';
+import Pagination from '../../components/newcomponents/booking/Pagination';
+import {useDoctors} from '@/hooks/useDoctors'
+export default function AllDoctorsPage() {
+    const { searchQuery, filters, handleSearch, viewMode, setViewMode, setShowFilters, showFilters } = useBooking();
+const { data: mockDoctors = [], isLoading, error } = useDoctors();
+console.log('raw doctors:', mockDoctors);
+console.log('filters:', filters);
+console.log('filtered result:', filterDoctors(mockDoctors, searchQuery, 'all', filters));
+
+const doctors = filterDoctors(
+    Array.isArray(mockDoctors) ? mockDoctors : [],
+    searchQuery,
+    'all',
+    filters
+);
     return (
         <>
-            {/* Mobile Filter Button */}
-            <div className="lg:hidden fixed bottom-20 right-4 z-50">
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button className="rounded-full w-14 h-14 shadow-2xl" size="icon">
-                            <Filter className="h-6 w-6" />
-                            {activeFilterCount > 0 && (
-                                <Badge className="absolute -top-1 -right-1 px-2 min-w-5 h-5 flex items-center justify-center">
-                                    {activeFilterCount}
-                                </Badge>
-                            )}
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
-                        <SheetHeader className="mb-6">
-                            <SheetTitle className="flex items-center gap-2">
-                                <Filter className="h-5 w-5" />
-                                Filters & Categories
-                            </SheetTitle>
-                        </SheetHeader>
-                        <div className="pb-6">
-                            <MobileSidebarContent
-                                selectedCategory={selectedCategory}
-                                onCategoryChange={onCategoryChange}
-                                filters={filters}
-                                onFilterChange={onFilterChange}
-                                darkMode={darkMode}
-                                setDarkMode={setDarkMode}
-                                activeFilterCount={activeFilterCount}
-                                insuranceOptions={insuranceOptions}
-                                experienceOptions={experienceOptions}
-                            />
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            </div>
-
-            {/* Desktop Sidebar */}
-            <aside
-                className={cn(
-                    "hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] bg-white shadow-xl rounded-2xl border border-gray-100 overflow-y-auto transition-transform duration-300",
-                    "sticky top-4"
-                )}
-            >
-                <div className="p-6">
-                    {/* Header */}
-                    <div className="mb-8">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
-                                    <Calendar className="w-5 h-5 text-white" />
-                                </div>
-                                <div>
-                                    <h1 className="text-xl font-bold text-gray-800">Find Doctors</h1>
-                                    <p className="text-sm text-gray-500">Book appointments easily</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setDarkMode(!darkMode)}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Search Stats */}
-                    <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 mb-6">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700">Active Filters</span>
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                                {activeFilterCount} active
-                            </span>
-                        </div>
-                        <div className="text-sm text-gray-600">
-                            Showing {mockDoctors.length} doctors in your area
-                        </div>
-                    </div>
-
-                    {/* Categories */}
-                    <div className="mb-8">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <Stethoscope className="w-5 h-5" />
-                            Specializations
-                        </h2>
-                        <nav className="space-y-2">
-                            {specializations.map((spec, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => onCategoryChange(spec.slug)}
-                                    className={`w-full group flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
-                                        selectedCategory === spec.slug
-                                            ? 'bg-gradient-to-r ' + spec.color + ' text-white shadow-lg'
-                                            : 'hover:bg-gray-50 text-gray-700'
-                                    }`}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className={`p-1.5 rounded-lg ${
-                                            selectedCategory === spec.slug
-                                                ? 'bg-white/20'
-                                                : 'bg-gray-100 group-hover:bg-gray-200'
-                                        }`}>
-                                            {spec.icon}
-                                        </div>
-                                        <span className="font-medium">{spec.name}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-1 rounded-full ${
-                                            selectedCategory === spec.slug
-                                                ? 'bg-white/30'
-                                                : 'bg-gray-100 text-gray-600'
-                                        }`}>
-                                            {spec.count}
-                                        </span>
-                                        <ChevronRight className={`w-4 h-4 ${
-                                            selectedCategory === spec.slug ? '' : 'text-gray-400 group-hover:translate-x-1'
-                                        }`} />
-                                    </div>
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
-
-                    {/* Advanced Filters */}
-                    <div className="space-y-6">
-                        <div>
-                            <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                <Filter className="w-4 h-4" />
-                                Filters
-                            </h3>
-
-                            {/* Experience */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Experience</label>
-                                <div className="space-y-2">
-                                    {experienceOptions.map(exp => (
-                                        <label key={exp.value} className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800">
-                                            <input
-                                                type="checkbox"
-                                                checked={filters.experience.includes(exp.value)}
-                                                onChange={(e) => onFilterChange('experience', exp.value, e.target.checked)}
-                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            {exp.label}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Rating */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Rating</label>
-                                <div className="flex items-center gap-2">
-                                    {[4, 4.5, 5].map(rating => (
-                                        <button
-                                            key={rating}
-                                            onClick={() => onFilterChange('rating', rating)}
-                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm ${
-                                                filters.rating === rating
-                                                    ? 'bg-blue-100 text-blue-700'
-                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                            }`}
-                                        >
-                                            <Star className="w-3 h-3" />
-                                            {rating}+
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Availability */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
-                                <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800">
-                                        <input
-                                            type="checkbox"
-                                            checked={filters.availableToday}
-                                            onChange={(e) => onFilterChange('availableToday', e.target.checked)}
-                                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                        />
-                                        Available Today
-                                    </label>
-                                    <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800">
-                                        <input
-                                            type="checkbox"
-                                            checked={filters.videoAvailable}
-                                            onChange={(e) => onFilterChange('videoAvailable', e.target.checked)}
-                                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                        />
-                                        Video Consultation
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Insurance */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Insurance</label>
-                                <div className="space-y-2 max-h-32 overflow-y-auto pr-2">
-                                    {insuranceOptions.map(insurance => (
-                                        <label key={insurance} className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800">
-                                            <input
-                                                type="checkbox"
-                                                checked={filters.insurance.includes(insurance)}
-                                                onChange={(e) => onFilterChange('insurance', insurance, e.target.checked)}
-                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            {insurance}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Price Range */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Price Range: ${filters.priceRange[0]} - ${filters.priceRange[1]}
-                                </label>
-                                <div className="space-y-2">
-                                    <input
-                                        type="range"
-                                        min="50"
-                                        max="300"
-                                        step="10"
-                                        value={filters.priceRange[1]}
-                                        onChange={(e) => onFilterChange('priceRange', [filters.priceRange[0], parseInt(e.target.value)])}
-                                        className="w-full"
-                                    />
-                                    <div className="flex justify-between text-xs text-gray-500">
-                                        <span>$50</span>
-                                        <span>$300</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Clear Filters */}
-                            {activeFilterCount > 0 && (
-                                <button
-                                    onClick={() => onFilterChange('clear')}
-                                    className="w-full mt-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                                >
-                                    Clear All Filters
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </>
-    );
-}
-
-function MobileSidebarContent({
-                                  selectedCategory,
-                                  onCategoryChange,
-                                  filters,
-                                  onFilterChange,
-                                  darkMode,
-                                  setDarkMode,
-                                  activeFilterCount,
-                                  insuranceOptions,
-                                  experienceOptions
-                              }) {
-    return (
-        <div className="space-y-6">
-            {/* Search Stats */}
-            <Card>
-                <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">Active Filters</span>
-                        <Badge variant="secondary">
-                            {activeFilterCount} active
-                        </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                        Showing {mockDoctors.length} doctors in your area
-                    </p>
-                </CardContent>
-            </Card>
-
-            {/* Categories */}
-            <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Stethoscope className="h-5 w-5" />
-                    Specializations
-                </h2>
-                <ScrollArea className="h-[200px]">
-                    <div className="space-y-2 pr-4">
-                        {specializations.map((spec, index) => (
-                            <Button
-                                key={index}
-                                onClick={() => onCategoryChange(spec.slug)}
-                                variant={selectedCategory === spec.slug ? "default" : "ghost"}
-                                className={cn(
-                                    "w-full justify-between p-3 h-auto",
-                                    selectedCategory === spec.slug && "bg-gradient-to-r " + spec.color
-                                )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={cn(
-                                        "p-1.5 rounded-md",
-                                        selectedCategory === spec.slug
-                                            ? "bg-white/20"
-                                            : "bg-muted"
-                                    )}>
-                                        {spec.icon}
-                                    </div>
-                                    <span>{spec.name}</span>
-                                </div>
-                                <Badge variant={selectedCategory === spec.slug ? "secondary" : "outline"}>
-                                    {spec.count}
-                                </Badge>
-                            </Button>
-                        ))}
-                    </div>
-                </ScrollArea>
-            </div>
-
-            <Separator />
-
-            {/* Filters */}
-            <Accordion type="multiple" className="w-full">
-                <AccordionItem value="experience">
-                    <AccordionTrigger className="text-sm font-medium">
-                        Experience
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="grid grid-cols-2 gap-2">
-                            {experienceOptions.map(exp => (
-                                <div key={exp.value} className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id={`mob-exp-${exp.value}`}
-                                        checked={filters.experience.includes(exp.value)}
-                                        onCheckedChange={(checked) =>
-                                            onFilterChange('experience', exp.value, checked)
-                                        }
-                                    />
-                                    <Label htmlFor={`mob-exp-${exp.value}`} className="text-sm font-normal cursor-pointer">
-                                        {exp.label}
-                                    </Label>
-                                </div>
-                            ))}
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="rating">
-                    <AccordionTrigger className="text-sm font-medium">
-                        Minimum Rating
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <Tabs
-                            defaultValue="0"
-                            value={String(filters.rating)}
-                            onValueChange={(value) => onFilterChange('rating', Number(value))}
-                            className="w-full"
-                        >
-                            <TabsList className="grid grid-cols-3">
-                                <TabsTrigger value="0">Any</TabsTrigger>
-                                <TabsTrigger value="4">4+</TabsTrigger>
-                                <TabsTrigger value="4.5">4.5+</TabsTrigger>
-                            </TabsList>
-                        </Tabs>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="availability">
-                    <AccordionTrigger className="text-sm font-medium">
-                        Availability
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="mob-available-today" className="text-sm font-normal">
-                                    Available Today
-                                </Label>
-                                <Switch
-                                    id="mob-available-today"
-                                    checked={filters.availableToday}
-                                    onCheckedChange={(checked) =>
-                                        onFilterChange('availableToday', checked)
-                                    }
-                                />
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="mob-video-consult" className="text-sm font-normal">
-                                    Video Consultation
-                                </Label>
-                                <Switch
-                                    id="mob-video-consult"
-                                    checked={filters.videoAvailable}
-                                    onCheckedChange={(checked) =>
-                                        onFilterChange('videoAvailable', checked)
-                                    }
-                                />
-                            </div>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="insurance">
-                    <AccordionTrigger className="text-sm font-medium">
-                        Insurance Providers
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-                            {insuranceOptions.map(insurance => (
-                                <div key={insurance} className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id={`mob-ins-${insurance}`}
-                                        checked={filters.insurance.includes(insurance)}
-                                        onCheckedChange={(checked) =>
-                                            onFilterChange('insurance', insurance, checked)
-                                        }
-                                    />
-                                    <Label htmlFor={`mob-ins-${insurance}`} className="text-sm font-normal cursor-pointer">
-                                        {insurance}
-                                    </Label>
-                                </div>
-                            ))}
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="price">
-                    <AccordionTrigger className="text-sm font-medium">
-                        Price Range
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm text-muted-foreground">
-                                    ${filters.priceRange[0]} - ${filters.priceRange[1]}
-                                </span>
-                            </div>
-                            <Slider
-                                defaultValue={filters.priceRange}
-                                min={50}
-                                max={300}
-                                step={10}
-                                value={filters.priceRange}
-                                onValueChange={(value) => onFilterChange('priceRange', value)}
-                                className="w-full"
-                            />
-                            <div className="flex justify-between text-xs text-muted-foreground">
-                                <span>$50</span>
-                                <span>$300</span>
-                            </div>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-
-            {/* Clear Filters */}
-            {activeFilterCount > 0 && (
-                <>
-                    <Separator />
-                    <Button
-                        variant="outline"
-                        onClick={() => onFilterChange('clear')}
-                        className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                        Clear All Filters
-                    </Button>
-                </>
-            )}
-        </div>
-    );
-}
-
-export default function ModernBookingPage() {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [filteredDoctors, setFilteredDoctors] = useState(mockDoctors);
-    const [showFilters, setShowFilters] = useState(false);
-    const [bookDoctor, setBookDoctor] = useState(null);
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-
-    const [filters, setFilters] = useState({
-        experience: [],
-        rating: 0,
-        availableToday: false,
-        videoAvailable: false,
-        insurance: [],
-        priceRange: [50, 300],
-        languages: []
-    });
-
-    // Handle search
-    const handleSearch = (query) => {
-        setSearchQuery(query);
-        applyFilters(query);
-    };
-
-    // Handle category change
-    const handleCategoryChange = (category) => {
-        setSelectedCategory(category);
-        if (category === 'all' || category === 'foryou') {
-            applyFilters(searchQuery);
-        } else {
-            const filtered = mockDoctors.filter(doctor =>
-                doctor.specialization.toLowerCase() === category.toLowerCase()
-            );
-            setFilteredDoctors(filtered);
-        }
-    };
-
-    // Handle filter changes
-    const handleFilterChange = (type, value, checked) => {
-        const newFilters = { ...filters };
-
-        switch (type) {
-            case 'experience':
-                if (checked) {
-                    newFilters.experience = [...newFilters.experience, value];
-                } else {
-                    newFilters.experience = newFilters.experience.filter(v => v !== value);
-                }
-                break;
-            case 'rating':
-                newFilters.rating = value;
-                break;
-            case 'availableToday':
-                newFilters.availableToday = value;
-                break;
-            case 'videoAvailable':
-                newFilters.videoAvailable = value;
-                break;
-            case 'insurance':
-                if (checked) {
-                    newFilters.insurance = [...newFilters.insurance, value];
-                } else {
-                    newFilters.insurance = newFilters.insurance.filter(v => v !== value);
-                }
-                break;
-            case 'priceRange':
-                newFilters.priceRange = value;
-                break;
-            case 'clear':
-                newFilters.experience = [];
-                newFilters.rating = 0;
-                newFilters.availableToday = false;
-                newFilters.videoAvailable = false;
-                newFilters.insurance = [];
-                newFilters.priceRange = [50, 300];
-                newFilters.languages = [];
-                break;
-            default:
-                break;
-        }
-
-        setFilters(newFilters);
-        applyFilters(searchQuery, newFilters);
-    };
-
-    // Apply all filters
-    const applyFilters = (query, filterState = filters) => {
-        let result = mockDoctors;
-
-        // Text search
-        if (query.trim() !== '') {
-            result = result.filter(doctor =>
-                doctor.name.toLowerCase().includes(query.toLowerCase()) ||
-                doctor.specialization.toLowerCase().includes(query.toLowerCase()) ||
-                doctor.expertise.some(e => e.toLowerCase().includes(query.toLowerCase()))
-            );
-        }
-
-        // Category filter
-        if (selectedCategory !== 'all' && selectedCategory !== 'foryou') {
-            result = result.filter(doctor =>
-                doctor.specialization.toLowerCase() === selectedCategory.toLowerCase()
-            );
-        }
-
-        // Experience filter
-        if (filterState.experience.length > 0) {
-            result = result.filter(doctor => {
-                const expYears = parseInt(doctor.experience);
-                return filterState.experience.some(minExp => expYears >= minExp);
-            });
-        }
-
-        // Rating filter
-        if (filterState.rating > 0) {
-            result = result.filter(doctor => doctor.rating >= filterState.rating);
-        }
-
-        // Availability filters
-        if (filterState.availableToday) {
-            result = result.filter(doctor =>
-                doctor.available.some(slot => slot.date === 'Today')
-            );
-        }
-
-        if (filterState.videoAvailable) {
-            result = result.filter(doctor =>
-                doctor.available.some(slot => slot.type === 'video')
-            );
-        }
-
-        // Insurance filter
-        if (filterState.insurance.length > 0) {
-            result = result.filter(doctor =>
-                filterState.insurance.some(ins => doctor.insurance.includes(ins))
-            );
-        }
-
-        // Price filter
-        result = result.filter(doctor =>
-            doctor.price >= filterState.priceRange[0] &&
-            doctor.price <= filterState.priceRange[1]
-        );
-
-        setFilteredDoctors(result);
-    };
-
-    // Handle booking
-    const handleBookDoctor = (doctor) => {
-        setBookDoctor(doctor);
-        // You can add modal or navigation logic here
-        alert(`Booking appointment with ${doctor.name}`);
-    };
-
-    const categoryName = specializations.find(s => s.slug === selectedCategory)?.name || 'All Doctors';
-
-    return (
-        <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-            {/* Sidebar */}
-            <Sidebar
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                filters={filters}
-                onFilterChange={handleFilterChange}
+            <Header
+                searchQuery={searchQuery}
+                handleSearch={handleSearch}
+                setViewMode={setViewMode}
+                viewMode={viewMode}
+                filteredDoctors={doctors}
+                categoryName="All Doctors"
+                mockDoctors={mockDoctors}
+                setShowFilters={setShowFilters}
                 showFilters={showFilters}
             />
 
-            {/* Main Content */}
-            <main className="flex-1 p-4 lg:p-8">
-                <div className="max-w-7xl mx-auto">
-                    <Header
-                        searchQuery={searchQuery}
-                        handleSearch={handleSearch}
-                        setViewMode={setViewMode}
-                        setShowFilters={setShowFilters}
-                        showFilters={showFilters}
-                        filteredDoctors={filteredDoctors}
-                        categoryName={categoryName}
-                        mockDoctors={mockDoctors}
-                        viewMode={viewMode}
-                    />
-
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 mt-4">
-                        <div>
-                            <h2 className="text-xl lg:text-2xl font-bold text-gray-800">{categoryName}</h2>
-                            <p className="text-gray-500 mt-1 text-sm lg:text-base">
-                                {filteredDoctors.length} doctors found •
-                                <span className="text-green-600 ml-2">Sort by: Recommended</span>
-                            </p>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <div className="text-sm text-gray-600 hidden sm:flex items-center">
-                                <TrendingUp className="w-4 h-4 inline mr-1" />
-                                <span>Top picks for you</span>
-                            </div>
-                            <button className="px-4 py-2 bg-blue-50 text-blue-700 font-medium rounded-xl hover:bg-blue-100 transition-colors text-sm lg:text-base">
-                                Sort
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Doctors Grid/List */}
-                    {filteredDoctors.length > 0 ? (
-                        <div
-                            className={`
-                                ${viewMode === 'grid'
-                                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
-                                : 'space-y-4'}
-                            `}
-                        >
-                            {filteredDoctors.map((doctor) => (
-                                <DoctorCard
-                                    key={doctor.id}
-                                    doctor={doctor}
-                                    onBook={handleBookDoctor}
-                                    viewMode={viewMode}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12 lg:py-16 bg-white rounded-2xl shadow-sm border border-gray-100 mx-2 lg:mx-0">
-                            <div className="inline-block p-4 lg:p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full mb-4">
-                                <Search className="w-8 h-8 lg:w-12 lg:h-12 text-blue-400" />
-                            </div>
-                            <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-2">No matching doctors found</h3>
-                            <p className="text-gray-500 mb-6 px-4 lg:px-0">Try adjusting your search or filters to find what you're looking for</p>
-                            <button
-                                onClick={() => {
-                                    handleSearch('');
-                                    handleFilterChange('clear');
-                                }}
-                                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg transition-all text-sm lg:text-base"
-                            >
-                                Clear All Filters
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Load More & Pagination */}
-                    {filteredDoctors.length > 0 && (
-                        <div className="mt-8 lg:mt-12 px-2 lg:px-0">
-                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                <div className="text-sm text-gray-500">
-                                    Showing 1-{Math.min(filteredDoctors.length, 6)} of {filteredDoctors.length} doctors
-                                </div>
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
-                                        Previous
-                                    </button>
-                                    <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm">
-                                        1
-                                    </button>
-                                    <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
-                                        2
-                                    </button>
-                                    <button className="px-3 py-1.5 lg:px-4 lg:py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
-                                        Next
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </main>
-
-            {/* Quick Booking Modal */}
-            {bookDoctor && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-white rounded-2xl max-w-lg w-full p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-gray-800">Confirm Appointment</h3>
-                            <button
-                                onClick={() => setBookDoctor(null)}
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-xl">
-                                <img src={bookDoctor.image} alt={bookDoctor.name} className="w-16 h-16 rounded-xl object-cover" />
-                                <div>
-                                    <h4 className="font-bold text-gray-800">{bookDoctor.name}</h4>
-                                    <p className="text-sm text-gray-600">{bookDoctor.specialization}</p>
-                                </div>
-                            </div>
-                            <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
-                                Confirm Booking for ${bookDoctor.price}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Floating Action Button */}
-            <button className="fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-40 p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110">
-                <Calendar className="w-6 h-6" />
-            </button>
-        </div>
+            <ResultsHeader categoryName="All Doctors" totalCount={mockDoctors.length} />
+            <DoctorsGrid doctors={mockDoctors} />
+            {mockDoctors.length > 0 && <Pagination total={mockDoctors.length} />}
+        </>
     );
 }

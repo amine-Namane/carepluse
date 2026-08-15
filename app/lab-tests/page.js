@@ -2423,6 +2423,7 @@ import ModelClient, { isUnexpected } from "@azure-rest/ai-inference";
 import { AzureKeyCredential } from "@azure/core-auth";
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseclient';
+import { saveLabResult } from "@/services/labResults";
 
 const endpoint = process.env.NEXT_PUBLIC_AZURE_ENDPOINT || "https://models.inference.ai.azure.com";
 const apiKey = process.env.NEXT_PUBLIC_OPENAI_KEY_5;
@@ -2446,7 +2447,6 @@ const TestAnalyzerPage = () => {
   const [doctors, setDoctors] = useState([]);
   const resultsRef = useRef(null);
   const router = useRouter();
-
   // All test categories
   const testCategories = {
     "cbc": {
@@ -2554,12 +2554,29 @@ const TestAnalyzerPage = () => {
 
   useEffect(() => {
     const checkAuthAndFetchAppointments = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/Patient");
-        return;
-      } else {
-        setUser(user);
+     try {
+        setLoading(true);
+    
+        const userData = await getUser();
+    
+        if (!userData) {
+          setUser(null);
+          return;
+        }
+    
+        setUser({
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          avatar: `https://ui-avatars.com/api/?name=${userData.name}`,
+        });
+    
+      } catch (error) {
+        console.error(error);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -2712,7 +2729,20 @@ D. **Timeline:** Urgent/Within 1 week/Within 1 month
 
       const riskScore = calculateRiskScore(values, selectedTests);
       const severity = getSeverityLevel(riskScore);
+try {
+  await saveLabResult({
+    category: selectedTestCategory,
+    values,
+    ai_result: aiResponse,
+    risk_score: riskScore,
+    severity,
+    doctors: extractedDoctors,
+  });
 
+  console.log("✅ Saved with cookie auth");
+} catch (err) {
+  console.error(err);
+}
       setAnalysisDetails({
         analysis: aiResponse,
         riskScore,

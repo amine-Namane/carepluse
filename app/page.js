@@ -279,7 +279,7 @@
 //         </div>
 //     );
 // }
-"use client"
+'use client';
 import React, { useState, useEffect } from 'react';
 import {
     Search,
@@ -315,7 +315,8 @@ import FloatingActionButton from "@/components/newcomponents/FloatingActionButto
 import LoadingSpinner from "@/components/newcomponents/LoadingSpinner.jsx";
 import Link from "next/link";
 
-
+import { useQuery } from '@tanstack/react-query';
+import { fetchDoctors } from '@/services/doctor';
 // Mock data for doctors
 const mockDoctors = [
     {
@@ -404,7 +405,7 @@ const articles = [
         excerpt: "Why regular dental visits are crucial for overall health.",
         image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400",
         category: "Dentistry",
-        readTime: "4 min read"
+        readTime: "4 min read"   
     },
     {
         id: 3,
@@ -423,6 +424,10 @@ const articles = [
 export default function ModernMedicalHomePage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
+    const { data:doctors, isLoading, error } = useQuery({
+        queryKey: ['doctors'],
+        queryFn: fetchDoctors,
+    });
 
     useEffect(() => {
         // Simulate data loading
@@ -436,7 +441,7 @@ export default function ModernMedicalHomePage() {
     if (loading) {
         return <LoadingSpinner />;
     }
-
+    console.log(doctors);
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
             {/*<Navbar />*/}
@@ -613,8 +618,8 @@ export default function ModernMedicalHomePage() {
                     <div>
                         <h3 className="text-3xl font-bold text-gray-800 mb-8">Popular Doctors</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {mockDoctors.map((doctor) => (
-                                <DoctorCard key={doctor.id} doctor={doctor} />
+                            {doctors?.map((doctors) => (
+                                <DoctorCard  doctor={doctors} />
                             ))}
                         </div>
                     </div>

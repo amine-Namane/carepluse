@@ -522,7 +522,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseclient";
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from "next/navigation";
 import {
   HeartPulse,
@@ -537,7 +537,7 @@ import {
   AlertCircle,
   CheckCircle
 } from "lucide-react";
-
+import { login } from '@/services/auth';
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
@@ -550,50 +550,77 @@ export function PatientForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [success, setSuccess] = useState(false);
 
+
+const { refreshUser } = useAuth();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "" },
   });
 
+
+  // async function onSubmit(values) {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     setSuccess(false);
+
+  //     // 1. Authenticate user
+  //     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+  //       email: values.email,
+  //       password: values.password
+  //     });
+
+  //     if (authError) throw authError;
+
+  //     // 2. Get patient profile
+  //     const { data: patientData, error: profileError } = await supabase
+  //         .from('patients')
+  //         .select('*')
+  //         .eq('user_id', authData.user.id)
+  //         .single();
+
+  //     // 3. Handle missing profile
+  //     if (!patientData) {
+  //       await supabase.auth.signOut();
+  //       throw new Error('No patient profile found. Please contact support.');
+  //     }
+
+  //     // 4. Show success and redirect
+  //     setSuccess(true);
+  //     setTimeout(() => {
+  //       router.push('/');
+  //     }, 1500);
+
+  //   } catch (error) {
+  //     setError(error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
   async function onSubmit(values) {
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccess(false);
+  try {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
 
-      // 1. Authenticate user
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
-      });
+    // ✅ Laravel login (stores token in cookie)
+    await login(values.email, values.password);
+ 
+        await refreshUser();       // <-- updates context immediately
 
-      if (authError) throw authError;
+    // ✅ success
+    setSuccess(true);
 
-      // 2. Get patient profile
-      const { data: patientData, error: profileError } = await supabase
-          .from('patients')
-          .select('*')
-          .eq('user_id', authData.user.id)
-          .single();
+    setTimeout(() => {
+      router.push('/');
+    }, 1000);
 
-      // 3. Handle missing profile
-      if (!patientData) {
-        await supabase.auth.signOut();
-        throw new Error('No patient profile found. Please contact support.');
-      }
-
-      // 4. Show success and redirect
-      setSuccess(true);
-      setTimeout(() => {
-        router.push('/');
-      }, 1500);
-
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
+  } catch (err) {
+    setError(err.message || 'Login failed');
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
       <div className="space-y-8">

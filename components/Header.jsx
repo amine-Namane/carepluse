@@ -637,9 +637,9 @@ import {
   Moon,
   Sun
 } from 'lucide-react';
-import { supabase } from "@/lib/supabaseclient";
 import { useRouter } from "next/navigation";
-
+import { getUser, logout } from "@/services/auth";
+import { useAuth } from '@/context/AuthContext';
 const MockHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -647,114 +647,139 @@ const MockHeader = () => {
   const [notifications, setNotifications] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [user, setUser] = useState(null);
+  // const [loading, setLoading] = useState(true);
   const router = useRouter();
-
+const { user, loading, logout } = useAuth();
   // Fetch user on component mount
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setLoading(true);
-        // First, check if we're in the browser (client-side)
-        if (typeof window === 'undefined') return;
+  // useEffect(() => {
+    // const fetchUser = async () => {
+    //   try {
+    //     setLoading(true);
+    //     // First, check if we're in the browser (client-side)
+    //     if (typeof window === 'undefined') return;
 
-        // Check if supabase client is available
-        if (!supabase) {
-          console.error('Supabase client is not available');
-          return;
-        }
+    //     // Check if supabase client is available
+    //     if (!supabase) {
+    //       console.error('Supabase client is not available');
+    //       return;
+    //     }
 
-        // Get current session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    //     // Get current session
+    //     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          setUser(null);
-          return;
-        }
+    //     if (sessionError) {
+    //       console.error('Session error:', sessionError);
+    //       setUser(null);
+    //       return;
+    //     }
 
-        if (!session) {
-          setUser(null);
-          return;
-        }
+    //     if (!session) {
+    //       setUser(null);
+    //       return;
+    //     }
 
-        const authUser = session.user;
+    //     const authUser = session.user;
 
-        // Try to fetch user data from your users table
-        try {
-          const { data: userData, error: userError } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', authUser.id)
-              .maybeSingle(); // Use maybeSingle instead of single to avoid throwing on no rows
+    //     // Try to fetch user data from your users table
+    //     try {
+    //       const { data: userData, error: userError } = await supabase
+    //           .from('users')
+    //           .select('*')
+    //           .eq('id', authUser.id)
+    //           .maybeSingle(); // Use maybeSingle instead of single to avoid throwing on no rows
 
-          if (userError) {
-            console.warn('User data fetch error (falling back to auth data):', userError);
-            // Fall back to auth user data
-          }
+    //       if (userError) {
+    //         console.warn('User data fetch error (falling back to auth data):', userError);
+    //         // Fall back to auth user data
+    //       }
 
-          // Generate avatar based on email if no avatar_url
-          const avatarUrl = userData?.avatar_url ||
-              authUser.user_metadata?.avatar_url ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.email || 'User')}&background=random&color=fff`;
+    //       // Generate avatar based on email if no avatar_url
+    //       const avatarUrl = userData?.avatar_url ||
+    //           authUser.user_metadata?.avatar_url ||
+    //           `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.email || 'User')}&background=random&color=fff`;
 
-          // Get name from various sources
-          const userName = userData?.full_name ||
-              authUser.user_metadata?.full_name ||
-              authUser.user_metadata?.name ||
-              authUser.email?.split('@')[0] ||
-              'User';
+    //       // Get name from various sources
+    //       const userName = userData?.full_name ||
+    //           authUser.user_metadata?.full_name ||
+    //           authUser.user_metadata?.name ||
+    //           authUser.email?.split('@')[0] ||
+    //           'User';
 
-          // Set user with available data
-          setUser({
-            id: authUser.id,
-            name: userName,
-            email: authUser.email,
-            avatar: avatarUrl,
-            role: userData?.role || 'Patient',
-            appointments: userData?.appointments_count || 0,
-            unreadNotifications: 0 // Initialize as 0
-          });
-        } catch (dbError) {
-          console.error('Database error:', dbError);
-          // Fallback: use auth data only
-          setUser({
-            id: authUser.id,
-            name: authUser.email?.split('@')[0] || 'User',
-            email: authUser.email,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.email || 'User')}&background=random&color=fff`,
-            role: 'Patient',
-            appointments: 0,
-            unreadNotifications: 0
-          });
-        }
-      } catch (error) {
-        console.error('Error in fetchUser:', error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+    //       // Set user with available data
+    //       setUser({
+    //         id: authUser.id,
+    //         name: userName,
+    //         email: authUser.email,
+    //         avatar: avatarUrl,
+    //         role: userData?.role || 'Patient',
+    //         appointments: userData?.appointments_count || 0,
+    //         unreadNotifications: 0 // Initialize as 0
+    //       });
+    //     } catch (dbError) {
+    //       console.error('Database error:', dbError);
+    //       // Fallback: use auth data only
+    //       setUser({
+    //         id: authUser.id,
+    //         name: authUser.email?.split('@')[0] || 'User',
+    //         email: authUser.email,
+    //         avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.email || 'User')}&background=random&color=fff`,
+    //         role: 'Patient',
+    //         appointments: 0,
+    //         unreadNotifications: 0
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.error('Error in fetchUser:', error);
+    //     setUser(null);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+// const fetchUser = async () => {
+//   try {
+//     setLoading(true);
 
-    fetchUser();
+//     const userData = await getUser();
+
+//     if (!userData) {
+//       setUser(null);
+//       return;
+//     }
+
+//     setUser({
+//       id: userData.id,
+//       name: userData.name,
+//       email: userData.email,
+//       role: userData.role,
+//       avatar: `https://ui-avatars.com/api/?name=${userData.name}`,
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     setUser(null);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+//     fetchUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          console.log('Auth state changed:', event);
-          if (event === 'SIGNED_IN' && session) {
-            fetchUser();
-          } else if (event === 'SIGNED_OUT') {
-            setUser(null);
-          }
-        }
-    );
+  //   const { data: { subscription } } = supabase.auth.onAuthStateChange(
+  //       async (event, session) => {
+  //         console.log('Auth state changed:', event);
+  //         if (event === 'SIGNED_IN' && session) {
+  //           fetchUser();
+  //         } else if (event === 'SIGNED_OUT') {
+  //           setUser(null);
+  //         }
+  //       }
+  //   );
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, []);
 
   // Mock notifications (simplified)
   useEffect(() => {
@@ -767,17 +792,21 @@ const MockHeader = () => {
     }
   }, [user]);
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      setUser(null);
-      setIsProfileOpen(false);
-      router.push("/Patient");
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
+  // const handleLogout = async () => {
+  //   try {
+  //     await supabase.auth.signOut();
+  //     setUser(null);
+  //     setIsProfileOpen(false);
+  //     router.push("/Patient");
+  //   } catch (error) {
+  //     console.error('Logout error:', error);
+  //   }
+  // };
+const handleLogout = async () => {
+  await logout();
+  setUser(null);
+  router.push("/patient");
+};
   const markNotificationAsRead = (id) => {
     setNotifications(notifications.map(notif =>
         notif.id === id ? { ...notif, read: true } : notif

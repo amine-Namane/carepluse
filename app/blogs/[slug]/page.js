@@ -2268,7 +2268,7 @@ Processed foods, added sugars, excessive salt, and red meat should be consumed i
             id: 3,
             title: "Stress Management Techniques",
             excerpt: "Evidence-based strategies for reducing stress and anxiety.",
-            image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400",
+            image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400",
             readTime: "6 min",
             category: "Mental Health"
         },

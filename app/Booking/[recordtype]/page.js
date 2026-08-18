@@ -57,25 +57,22 @@
 //   );
 // }
 'use client';
-// app/Booking/[specialization]/page.jsx
-// Dynamic route — handles /Booking/cardiologist, /Booking/dentist, etc.
-// `params.specialization` matches the slug in specializations data.
 
 import { useParams } from 'next/navigation';
 import { useBooking } from '@/utils/BookingContext';
-// import { mockDoctors } from '@/data/doctors';
 import { specializations } from '@/data/specializations';
-import { filterDoctors } from '../../../utils/filterDoctors';
-import Header from '../Header'; // your existing Header component
-import ResultsHeader from '../../../components/newcomponents/booking/ResultsHeader';
-import DoctorsGrid from '../../../components/newcomponents/booking/DoctorsGrid';
-// import Pagination from '../../../components/newcomponents/booking/Pagination';
-import Pagination from '@/components/newcomponents/booking/Pagination';
-import {useDoctors} from '@/hooks/useDoctors'
-export default function SpecializationPage() {
-const { data: mockDoctors = [], isLoading, error } = useDoctors();
+import { filterDoctors } from '@/utils/filterDoctors';
 
+import Header from '../Header';
+import ResultsHeader from '@/components/newcomponents/booking/ResultsHeader';
+import DoctorsGrid from '@/components/newcomponents/booking/DoctorsGrid';
+import Pagination from '@/components/newcomponents/booking/Pagination';
+
+import { useDoctors } from '@/hooks/useDoctors';
+
+export default function SpecializationPage() {
     const params = useParams();
+
     const {
         searchQuery,
         filters,
@@ -85,29 +82,76 @@ const { data: mockDoctors = [], isLoading, error } = useDoctors();
         setShowFilters,
         showFilters,
     } = useBooking();
- 
-    // The param key comes from the folder name:
-    //   folder [specialization] → params.specialization
-    //   folder [recordtype]     → params.recordtype
-    // We try both so it works regardless of which folder name you used.
-    const slug = (
-        params?.specialization ??
-        params?.recordtype ??
-        ''
+
+    const {
+        data: doctorsData,
+        isLoading,
+        error,
+    } = useDoctors();
+
+    // Fix: Properly extract doctors from API response
+    const doctorsFromApi = Array.isArray(doctorsData) 
+        ? doctorsData 
+        : doctorsData?.data ?? [];
+
+    // Fix: Get slug from params
+    const slug = String(
+        params?.specialization || params?.recordtype || ''
     ).toLowerCase();
- 
-    // Add a console.log here if still broken — it will show you exactly what params contains
-    // console.log('[SpecializationPage] params:', params, '→ slug:', slug);
- 
-    const spec = specializations.find((s) => s.slug === slug);
-    const categoryName =
-        spec?.name ??
-        (slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : 'Doctors');
- 
-    const doctors = slug
-        ? filterDoctors(mockDoctors, searchQuery, slug, filters)
-        : [];
- 
+
+    // Find specialization from data
+    const specialization = specializations.find(
+        (item) => item.slug.toLowerCase() === slug
+    );
+
+    const categoryName = 
+        specialization?.name || 
+        (slug 
+            ? slug.charAt(0).toUpperCase() + slug.slice(1) 
+            : 'Doctors');
+
+    // Fix: Pass the correct parameters to filterDoctors
+    const filteredDoctors = slug 
+        ? filterDoctors(
+              doctorsFromApi,
+              searchQuery,
+              slug,
+              filters
+          ) 
+        : doctorsFromApi;
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-500">Loading doctors...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center">
+                    <p className="text-red-500 text-lg font-semibold">
+                        Failed to load doctors.
+                    </p>
+                    <p className="text-gray-500 mt-2">Please try again later.</p>
+                </div>
+            </div>
+        );
+    }
+console.log('PARAMS:', params);
+console.log('SLUG:', slug);
+console.log('API DOCTORS:', doctorsFromApi);
+console.log(
+    'SPECIALIZATIONS:',
+    doctorsFromApi.map((doctor) => doctor.specialization)
+);
     return (
         <>
             <Header
@@ -115,17 +159,36 @@ const { data: mockDoctors = [], isLoading, error } = useDoctors();
                 handleSearch={handleSearch}
                 setViewMode={setViewMode}
                 viewMode={viewMode}
-                filteredDoctors={doctors}
+                filteredDoctors={filteredDoctors}
                 categoryName={categoryName}
-                mockDoctors={mockDoctors}
+                mockDoctors={doctorsFromApi}
                 setShowFilters={setShowFilters}
                 showFilters={showFilters}
             />
- 
-            <ResultsHeader categoryName={categoryName} totalCount={doctors.length} />
-            <DoctorsGrid doctors={doctors} />
-            {doctors.length > 0 && <Pagination total={doctors.length} />}
+
+            <ResultsHeader
+                categoryName={categoryName}
+                totalCount={filteredDoctors.length}
+            />
+
+            {filteredDoctors.length > 0 ? (
+                <DoctorsGrid doctors={filteredDoctors} />
+            ) : (
+                <div className="flex min-h-[300px] items-center justify-center">
+                    <div className="text-center">
+                        <p className="text-gray-500 text-lg">
+                            No doctors found for {categoryName}.
+                        </p>
+                        <p className="text-gray-400 text-sm mt-2">
+                            Try adjusting your filters or search criteria.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {filteredDoctors.length > 0 && (
+                <Pagination total={filteredDoctors.length} />
+            )}
         </>
     );
 }
- 

@@ -1026,49 +1026,9 @@ export default function DoctorCard({ doctor }) {
 
                     <div className="absolute top-4 left-4 flex flex-wrap gap-2">
 
-                        {/* Featured */}
+                      
 
-                        {doctor?.featured && (
-
-                            <div className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-semibold rounded-full">
-
-                                <Crown className="w-3 h-3" />
-
-                                Featured
-
-                            </div>
-
-                        )}
-
-
-                        {/* Verified */}
-
-                        {doctor?.verified && (
-
-                            <div className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-full">
-
-                                <BadgeCheck className="w-3 h-3" />
-
-                                Verified
-
-                            </div>
-
-                        )}
-
-
-                        {/* Awards */}
-
-                        {awards.length > 0 && (
-
-                            <div className="flex items-center gap-1 px-3 py-1.5 bg-purple-500 text-white text-xs font-semibold rounded-full">
-
-                                <AwardIcon className="w-3 h-3" />
-
-                                {awards.length} Awards
-
-                            </div>
-
-                        )}
+                      
 
                     </div>
 
@@ -1081,39 +1041,6 @@ export default function DoctorCard({ doctor }) {
 
                         {/* Favorite */}
 
-                        <button
-                            type="button"
-                            onClick={() =>
-                                setIsFavorite(
-                                    !isFavorite
-                                )
-                            }
-                            aria-label="Favorite doctor"
-                            className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 hover:scale-110"
-                        >
-
-                            <Heart
-                                className={`w-5 h-5 transition-colors ${
-                                    isFavorite
-                                        ? 'fill-red-500 text-red-500'
-                                        : 'text-gray-600'
-                                }`}
-                            />
-
-                        </button>
-
-
-                        {/* AI / Sparkles */}
-
-                        <button
-                            type="button"
-                            aria-label="Doctor highlights"
-                            className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 hover:scale-110"
-                        >
-
-                            <Sparkles className="w-5 h-5 text-gray-600" />
-
-                        </button>
 
                     </div>
 
@@ -1140,18 +1067,6 @@ export default function DoctorCard({ doctor }) {
 
                             </p>
 
-
-                            <div className="flex items-center gap-1 text-yellow-300">
-
-                                <Star className="w-4 h-4 fill-current" />
-
-                                <span className="text-sm font-bold">
-
-                                    {doctor?.rating ?? 0}
-
-                                </span>
-
-                            </div>
 
                         </div>
 
@@ -1681,18 +1596,7 @@ export default function DoctorCard({ doctor }) {
                                             idx
                                         ) => {
 
-                                            const targetDay =
-                                                typeof slot?.day ===
-                                                'number'
-                                                    ? slot.day
-                                                    : dayNames.findIndex(
-                                                          (day) =>
-                                                              day.toLowerCase() ===
-                                                              String(
-                                                                  slot?.day ||
-                                                                      ''
-                                                              ).toLowerCase()
-                                                      );
+                                            const targetDay = Number(slot?.day);
 
                                             const validDay =
                                                 targetDay >=
